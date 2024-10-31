@@ -1,7 +1,11 @@
 source:
   - name: user_input
     type: user_input
-  - !inc configs/source/HumanEval-like.yaml
+  - name: user_input-like
+    type: json
+    kwargs:
+      path: data/user_input.json
+      sort_key: id
 
 dataset:
   - name: target
@@ -12,22 +16,22 @@ dataset:
       primary_key: id
       fields:
         - name: id
-          source: HumanEval-like
+          source: user_input-like
           key: id
         - name: prompt
-          source: HumanEval-like
+          source: user_input-like
           key: prompt
         - name: requirements
-          source: HumanEval-like
+          source: user_input-like
           key: requirements
         - name: plan
-          source: HumanEval-like
+          source: user_input-like
           key: final_plan
         - name: code
-          source: HumanEval-like
+          source: user_input-like
           key: code
         - name: gen_tc
-          source: HumanEval-like
+          source: user_input-like
           key: gen_tc
 
 graph:
