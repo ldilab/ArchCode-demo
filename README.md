@@ -42,7 +42,7 @@ docker run -d \
 docker exec -d ollama ollama pull ollama/llama3:8b-instruct-fp16
 ```
 
-## 4) save API keys
+## 3) save API keys
 
 1. In root directory, copy `api_keys_example.json` to `api_keys.json`.
 2. set your API keys in the file.
@@ -132,10 +132,113 @@ python run.py server \
     --candidate_num=10
 ```
 
-# 2. Configs
+## 2. Configs
 
-<!-- todo: add explanation about configs -->
+Configurations are stored as YAML files in the `configs` directory. Each config file generally contains three main sections:
 
-```
+1. **source**
+2. **dataset**
+3. **graph**
 
-```
+Below is a detailed explanation of each section.
+
+---
+
+### 1) Source
+
+The **source** section describes how to obtain the original data before it is processed into a usable dataset. It usually has the following fields:
+
+- **i. name**  
+  The name of the source.
+
+- **ii. type**  
+  The type of the source. Common values are `huggingface`, `json`, `jsonl`, or `yaml`.
+
+- **iii. kwargs**  
+  Additional details needed to load the data based on the `type`.
+
+  **For `huggingface` type**, the following `kwargs` are typical:
+
+  - **path**: The path (identifier) of the Hugging Face dataset.
+  - **sort_key**: The key used to sort the dataset.
+  - **split**: Specifies which split to load (e.g. `train`, `test`, `valid`).
+  - **load_dataset_kwargs**: Additional arguments passed to the `load_dataset` function.
+
+  **For `json`, `jsonl`, or `yaml` type**, the following `kwargs` are typical:
+
+  - **path**: The file path to the `.json`, `.jsonl`, or `.yaml` file.
+  - **sort_key**: The key used to sort the dataset.
+
+---
+
+### 2) Dataset
+
+The **dataset** section describes how data from the **source** is transformed into a final list of dictionaries (i.e., the processed dataset). Each dictionary in this list will contain the fields defined in the `fields` sub-section.
+
+- **i. name**  
+  The name of the dataset.
+
+  - If `name` is `target`, it indicates the main dataset to be used for generation or tasks.
+  - If `name` is `example`, it indicates a few-shot example dataset to support generation tasks.
+
+- **ii. primary_key**  
+  The field (defined in `fields`) that will act as the primary key.
+
+- **iii. fields**  
+  Defines which data fields should appear in each dictionary of the resulting dataset. Each field in this list has:
+
+  1. **name**  
+     The name of the field in the final dataset.
+  2. **source**  
+     Which source (from the `source` section) provides the data for this field.
+  3. **key**  
+     The specific key or attribute in the source that maps to this field.
+
+---
+
+### 3) Graph
+
+The **graph** section uses the [Langgraph](https://langchain-ai.github.io/langgraph/) library to define the LLM workflow. It describes how different nodes (and their chains) connect and in what order they execute.
+
+- **i. entry_point**  
+  The name of the node where the workflow starts.
+
+- **ii. edges**  
+  A list of edges defining connections between nodes. Each edge has:
+
+  1. **pair**: Names of the two nodes being connected.
+  2. **type**: The type of edge. In this repository, we primarily use `always`, meaning the second node always executes after the first.
+
+- **iii. nodes**  
+  A list of node definitions, where each node can contain one or more chains. Each node has:
+
+  1. **name**  
+     The name of the node.
+  2. **chains**  
+     A list of chains that make up this node. Each chain typically has:
+
+     1. **name**  
+        The name of the chain.
+     2. **dependencies**  
+        A list of chain names that must run before this chain.
+     3. **input_keys**  
+        The input keys required for execution.
+     4. **type & kwargs**  
+        The chain’s type and any additional parameters. Common chain types:
+
+        - **cot** (Chain of Thought): For LLM text generation.
+
+          - **n**: Number of thoughts (generations) to produce.
+          - **llm**: Which language model to use.
+          - **parsers**: How to parse generated code or text. Each parser has:
+            - **type**: The parser type.
+            - **kwargs**: Additional arguments for the parser.
+          - **prompt**: The prompt specification. Usually:
+            - **type**: For example, `chat` (for chat-based prompts).
+            - **kwargs**: Additional settings, templates, or variables for the prompt.
+
+        - **execute**  
+          Executes generated code or commands.
+
+        - **custom_lambda**  
+          Runs a user-defined custom function (lambda).
