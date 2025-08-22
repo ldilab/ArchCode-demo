@@ -1,0 +1,33 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes an integer `num` as input.
+- It returns a tuple of two integers.
+
+## Expected Behavior
+- The function should return a tuple where the first element represents the count of even digits in `num` and the second element represents the count of odd digits in `num`.
+
+## Edge Cases
+- Handle the case where `num` is negative or zero, returning (0, 0).
+- Handle the case where `num` has only one digit, returning (1, 0) if the digit is even or (0, 1) if the digit is odd.
+- Handle the case where `num` has all even or all odd digits, returning the appropriate tuple.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(log n), where n is the absolute value of `num`.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-integer `num` input.
+
+### Reliability
+- Ensure accurate counting of even and odd digits in `num`.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.

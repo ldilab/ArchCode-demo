@@ -1,0 +1,32 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, arithmetic operation errors, and other potential exceptions.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- The code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a positive floating-point number as input.
+- It returns the decimal part of the number as a float.
+
+## Expected Behavior
+- The function should return the decimal part of the given floating-point number.
+
+## Edge Cases
+- Handle negative numbers, returning the decimal part as a positive float.
+- Handle zero as input, returning zero as the decimal part.
+- Handle large input numbers, ensuring efficiency and avoiding overflow.
+- Handle extremely small input numbers, ensuring precision and avoiding underflow.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(1).
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large or small input numbers, providing results within a few milliseconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-float input, returning an error or a default value.
+- Handle very large or very small input numbers without causing arithmetic errors or loss of precision.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.

@@ -1,0 +1,36 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a list of integers `lst` as input.
+- It returns a tuple `(a, b)` where `a` is the largest negative integer in `lst` and `b` is the smallest positive integer in `lst`. If there are no negative or positive integers in `lst`, return `(None, None)`.
+
+## Expected Behavior
+- The function should find the largest negative integer and the smallest positive integer in `lst` and return them as a tuple `(a, b)`.
+- If there are no negative integers in `lst`, `a` should be None.
+- If there are no positive integers in `lst`, `b` should be None.
+
+## Edge Cases
+- Handle an empty `lst` list, returning `(None, None)`.
+- Handle the case where there are no negative integers in `lst`, returning `(None, b)` where `b` is the smallest positive integer in `lst`.
+- Handle the case where there are no positive integers in `lst`, returning `(a, None)` where `a` is the largest negative integer in `lst`.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the `lst` list.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list `lst` input.
+- Handle non-integer elements in the `lst` list.
+
+### Reliability
+- Avoid index errors while accessing `lst` elements.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.

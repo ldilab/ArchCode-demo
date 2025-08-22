@@ -1,0 +1,33 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a string `test` as input.
+- It returns a dictionary.
+
+## Expected Behavior
+- The function should return a dictionary where the keys are lowercase letters from the `test` string and the values are their respective counts in the string.
+- If multiple letters have the same occurrence, all of them should be included in the dictionary.
+
+## Edge Cases
+- Handle an empty `test` string, returning an empty dictionary.
+- Handle a `test` string with only spaces, returning an empty dictionary.
+- Handle a `test` string with no lowercase letters, returning an empty dictionary.
+- Handle a `test` string with all letters having the same count, returning a dictionary with all letters and their respective counts.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the `test` string.
+- Space complexity: O(k) where k is the number of unique lowercase letters in the `test` string.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle a non-string input.
+- Handle a non-lowercase letter character in the `test` string.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

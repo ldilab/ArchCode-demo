@@ -1,0 +1,37 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a list of integers `lst` as input.
+- It returns an integer.
+
+## Expected Behavior
+- The function should square the integer entry in `lst` if its index is a multiple of 3.
+- The function should cube the integer entry in `lst` if its index is a multiple of 4 and not a multiple of 3.
+- The function should not change the entries in `lst` whose indexes are not a multiple of 3 or 4.
+- The function should return the sum of all entries in `lst` after applying the above transformations.
+
+## Edge Cases
+- Handle an empty `lst`, returning 0.
+- Handle a non-list input, returning None.
+- Handle non-integer elements in `lst`, skipping them during the sum calculation.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the `lst`.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-integer elements in `lst`.
+- Handle non-list `lst` input.
+
+### Reliability
+- Avoid index errors while accessing `lst` elements.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

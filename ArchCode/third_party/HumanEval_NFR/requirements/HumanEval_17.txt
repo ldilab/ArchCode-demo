@@ -1,0 +1,32 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a string `music_string` as input.
+- It returns a list of integers.
+
+## Expected Behavior
+- The function should parse the `music_string` and return a list of integers representing the duration of each note.
+
+## Edge Cases
+- Handle an empty `music_string`, returning an empty list.
+- Handle invalid characters in the `music_string`, skipping them and returning the durations of valid notes.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the `music_string`.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle a non-string `music_string` input.
+
+### Reliability
+- Ensure the function can handle any valid music note format and return the correct durations.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

@@ -1,0 +1,35 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a list of integers `arr` and a positive integer `k` as input.
+- It returns a sorted list of length `k` with the maximum `k` numbers in `arr`.
+
+## Expected Behavior
+- The function should return a sorted list of length `k` containing the `k` maximum numbers from `arr`.
+
+## Edge Cases
+- Handle an empty `arr` list, returning an empty list.
+- Handle the case where `k` is 0, returning an empty list.
+- Handle the case where `k` is greater than the length of `arr`, returning the sorted `arr` list.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n log n), where n is the length of the `arr` list due to the sorting operation.
+- Space complexity: O(n), where n is the length of the `arr` list, to store the sorted list.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list `arr` input or a non-integer `k`.
+- Handle non-integer elements in the `arr` list.
+- Handle negative values for `k`.
+
+### Reliability
+- Avoid index errors while accessing `arr` elements.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

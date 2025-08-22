@@ -1,0 +1,29 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes three arguments: an integer `n`, and two values `x` and `y`.
+- It returns a value.
+
+## Expected Behavior
+- If the input number `n` is prime, the function should return the value of `x`.
+- If the input number `n` is not prime, the function should return the value of `y`.
+
+## Edge Cases
+- Handle non-integer inputs for `n`, `x`, and `y`.
+- Handle negative values for `n`, `x`, and `y`.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(sqrt(n)) where n is the value of `n`.
+- Space complexity: O(1).
+- Ensure efficiency even for large inputs, providing results within 1 second.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-integer inputs for `n`, `x`, and `y`.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 3.

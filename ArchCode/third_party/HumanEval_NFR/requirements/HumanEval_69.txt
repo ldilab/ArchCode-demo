@@ -1,0 +1,33 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a non-empty list of positive integers as input.
+- It returns an integer.
+
+## Expected Behavior
+- The function should return the greatest integer from the input list that has a frequency greater than or equal to its own value.
+- If no such integer exists, the function should return -1.
+
+## Edge Cases
+- Handle a list with a single element, returning that element if it meets the condition.
+- Handle a list with all elements having a frequency less than their own value, returning -1.
+- Handle a list with multiple elements meeting the condition, returning the greatest one.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the input list.
+- Space complexity: O(n) where n is the length of the input list.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle a non-list input or a list with non-integer elements.
+- Handle a list with negative or zero elements.
+
+### Reliability
+- Avoid index errors while accessing list elements.
+- Handle cases where multiple elements have the same maximum frequency and value.

@@ -1,0 +1,38 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and other potential errors.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes two strings `s` and `c` as input.
+- It returns a tuple containing the result string and True/False for the palindrome check.
+
+## Expected Behavior
+- The function should delete all characters in `s` that are equal to any character in `c`.
+- It should then check if the resulting string is a palindrome.
+- The function should return a tuple containing the result string and True/False for the palindrome check.
+
+## Edge Cases
+- Handle empty `s` and/or `c` strings, returning an empty string and False for the palindrome check.
+- Handle non-string `s` and/or `c` inputs, returning an empty string and False for the palindrome check.
+- Handle cases where the resulting string is a palindrome, returning the result string and True for the palindrome check.
+- Handle cases where the resulting string is not a palindrome, returning the result string and False for the palindrome check.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n + m) where n is the length of `s` and m is the length of `c`.
+- Space complexity: O(n) where n is the length of `s`.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-string characters in `s` and/or `c`.
+- Handle empty `s` and/or `c` strings.
+- Handle special characters and whitespaces in `s` and/or `c`.
+
+### Reliability
+- Ensure the function handles all characters in `s` correctly, without missing any.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

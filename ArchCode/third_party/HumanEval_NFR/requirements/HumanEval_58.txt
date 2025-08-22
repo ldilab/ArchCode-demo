@@ -1,0 +1,31 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes two lists `l1` and `l2` as input.
+- It returns a list of integers.
+
+## Expected Behavior
+- The function should return a sorted list of unique common elements between `l1` and `l2`.
+
+## Edge Cases
+- Handle empty input lists, returning an empty list.
+- Handle cases where there are no common elements between `l1` and `l2`, returning an empty list.
+- Handle cases with multiple common elements, returning all of them in sorted order.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n+m), where n and m are the lengths of `l1` and `l2` respectively.
+- Space complexity: O(min(n, m)) for the set of common elements.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list input for `l1` and `l2`.
+- Handle non-integer elements in the input lists.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

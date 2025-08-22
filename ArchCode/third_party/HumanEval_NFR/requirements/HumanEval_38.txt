@@ -1,0 +1,41 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The `encode_cyclic` function takes a string `s` as input and returns an encoded string.
+- The `decode_cyclic` function takes an encoded string `s` as input and returns the decoded string.
+
+## Expected Behavior
+### encode_cyclic
+- The function should encode the input string by cycling groups of three characters.
+- The encoded string should be returned.
+
+### decode_cyclic
+- Currently, there is no implementation for the `decode_cyclic` function.
+
+## Edge Cases
+- Handle an empty string as input, returning an empty string.
+- Handle a string with length less than 3, returning the original string for the `encode_cyclic` function.
+
+# Non-functional Requirements
+## Performance
+- Time complexity:
+  - encode_cyclic: O(n), where n is the length of the input string.
+  - decode_cyclic: No implementation yet.
+- Space complexity:
+  - encode_cyclic: O(n), where n is the length of the input string.
+  - decode_cyclic: No implementation yet.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-string input for both functions.
+- Handle non-ascii characters in the input string.
+- Handle strings with leading/trailing whitespace.
+- Handle strings with only one or two characters in the `encode_cyclic` function.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

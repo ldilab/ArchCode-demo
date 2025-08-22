@@ -1,0 +1,34 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a list `grades` as input.
+- It returns a list of letter grades.
+
+## Expected Behavior
+- The function should convert each GPA in the input list to its corresponding letter grade based on the provided table.
+- The function should return a list of letter grades in the same order as the input list.
+
+## Edge Cases
+- Handle an empty `grades` list, returning an empty list.
+- Handle non-float or non-integer elements in the `grades` list.
+- Handle negative GPAs in the `grades` list.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the `grades` list.
+- Space complexity: O(n) where n is the length of the `grades` list.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list `grades` input.
+- Handle non-numeric elements in the `grades` list.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.
+- Write clear and concise code with meaningful variable names and comments.
+- Avoid code duplication by using helper functions or modules if necessary.

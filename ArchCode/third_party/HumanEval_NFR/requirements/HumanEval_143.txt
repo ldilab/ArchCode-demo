@@ -1,0 +1,35 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a string `sentence` as input.
+- It returns a string.
+
+## Expected Behavior
+- The function should return a string that contains the words from the original sentence whose lengths are prime numbers.
+- The order of the words in the new string should be the same as the original one.
+
+## Edge Cases
+- Handle an empty `sentence`, returning an empty string.
+- Handle the case where no word in `sentence` has a prime length, returning an empty string.
+- Handle multiple words with the same prime length, returning any of them.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n * m) where n is the number of words in `sentence` and m is the average length of the words.
+- Space complexity: O(k) where k is the number of words with prime lengths in `sentence`.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-string `sentence` input.
+- Handle non-letter characters in `sentence`.
+
+### Reliability
+- Ensure that the order of the words in the resulting string is the same as the original sentence.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

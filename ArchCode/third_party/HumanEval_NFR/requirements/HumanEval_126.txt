@@ -1,0 +1,35 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a list of integers `lst` as input.
+- It returns a boolean value indicating whether the list is sorted in ascending order and has no more than 1 duplicate of the same number.
+
+## Expected Behavior
+- The function should return True if the list is sorted in ascending order and has no more than 1 duplicate of the same number.
+- The function should return False otherwise.
+
+## Edge Cases
+- Handle an empty `lst`, returning True.
+- Handle a single-element `lst`, returning True.
+- Handle a `lst` with multiple duplicates of the same number, returning False.
+- Handle a `lst` that is sorted in descending order, returning False.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the `lst`.
+- Space complexity: O(n) for the count of each element in the `lst`.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list `lst` input or non-integer elements in the `lst`.
+
+### Reliability
+- Avoid index errors while accessing `lst` elements.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.

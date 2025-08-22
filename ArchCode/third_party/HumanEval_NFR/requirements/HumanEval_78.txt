@@ -1,0 +1,32 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, handling invalid inputs (e.g., non-string input, lowercase characters, non-hexadecimal characters).
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a string `num` representing a hexadecimal number as input.
+- It returns an integer representing the number of prime hexadecimal digits in `num`.
+
+## Expected Behavior
+- The function should count the number of prime hexadecimal digits in the input `num`.
+- The prime hexadecimal digits are 2, 3, 5, 7, B, D.
+
+## Edge Cases
+- Handle an empty `num` string, returning 0.
+- Handle a `num` string with no prime hexadecimal digits, returning 0.
+- Handle a `num` string with all prime hexadecimal digits, returning the length of the `num` string.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the `num` string.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely long `num` strings, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-string `num` input or lowercase hexadecimal characters.
+- Handle non-hexadecimal characters in the `num` string.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.

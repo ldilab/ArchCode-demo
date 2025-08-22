@@ -1,0 +1,31 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes two planet names as strings `planet1` and `planet2` as input.
+- It returns a tuple containing all planets whose orbits are located between the orbit of `planet1` and the orbit of `planet2`, sorted by proximity to the sun.
+
+## Expected Behavior
+- If `planet1` or `planet2` are not correct planet names, the function should return an empty tuple.
+- The function should return the planets between the orbit of `planet1` and the orbit of `planet2` in a sorted manner.
+
+## Edge Cases
+- Handle case-insensitive planet names (e.g., "jupiter" and "NePtUnE").
+- Handle the case where `planet1` and `planet2` are the same planet, returning an empty tuple.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(1) since the number of planets is fixed.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-string `planet1` and `planet2` inputs.
+- Handle invalid planet names that are not in the list of valid planet names.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

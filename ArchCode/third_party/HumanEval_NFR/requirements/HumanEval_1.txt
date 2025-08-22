@@ -1,0 +1,34 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a string `paren_string` as input.
+- It returns a list of strings.
+
+## Expected Behavior
+- The function should separate the groups of nested parentheses in `paren_string` into separate strings and return a list of these strings.
+- Each group of nested parentheses should be balanced, with each open parenthesis properly closed.
+- The groups should not be nested within each other.
+
+## Edge Cases
+- Handle an empty `paren_string`, returning an empty list.
+- Handle a `paren_string` with no groups of nested parentheses, returning a list with the original string as the only element.
+- Handle a `paren_string` with improperly balanced or nested parentheses, returning an empty list.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the `paren_string`.
+- Space complexity: O(k) where k is the number of groups of nested parentheses in the `paren_string`.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle a non-string `paren_string` input.
+- Handle a `paren_string` with non-parenthesis characters.
+- Handle a `paren_string` with unbalanced or improperly nested parentheses.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

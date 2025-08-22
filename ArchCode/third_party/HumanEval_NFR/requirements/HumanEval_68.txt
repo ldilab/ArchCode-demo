@@ -1,0 +1,35 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a list of integers `arr` as input.
+- It returns a list of integers.
+
+## Expected Behavior
+- The function should return a list containing the smallest even value in `arr` and its index.
+- If there are multiple nodes with the same smallest even value, the function should return the node with the smallest index.
+- If there are no even values in the array or the array is empty, the function should return an empty list.
+
+## Edge Cases
+- Handle an empty `arr` list, returning an empty list.
+- Handle the case where no even values are found in `arr`, returning an empty list.
+- Handle multiple even values with the same minimum value, returning the one with the smallest index.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the `arr` list.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list `arr` input or non-integer elements in the `arr` list.
+
+### Reliability
+- Avoid index errors while accessing `arr` elements.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

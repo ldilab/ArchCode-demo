@@ -1,0 +1,31 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and so on.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes two lists of strings, `lst1` and `lst2`, as input.
+- It returns a list of strings.
+
+## Expected Behavior
+- The function should return the list that has a total number of characters in all strings that is less than the other list.
+- If the two lists have the same total number of characters, the function should return the first list.
+
+## Edge Cases
+- Handle empty lists, returning an empty list.
+- Handle the case where both lists have the same total number of characters, returning the first list.
+- Handle lists with strings that have non-alphabetic characters.
+
+# Non-functional Requirements
+## Performance
+- The function should have a time complexity of O(n) where n is the total number of characters in both lists.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list inputs for `lst1` or `lst2`.
+- Handle non-string elements in `lst1` or `lst2`.
+- Handle non-alphabetic characters in strings.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

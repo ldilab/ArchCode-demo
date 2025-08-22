@@ -1,0 +1,32 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a string `s` and an integer `n` as input.
+- It returns an integer.
+
+## Expected Behavior
+- The function should extract the number of apples and oranges from the given string, subtract them from the total number of fruits in the basket (`n`), and return the resulting number of mango fruits.
+
+## Edge Cases
+- Handle an empty string `s`, returning `n` as the number of mango fruits.
+- Handle the case where no fruits are mentioned in the string, returning `n` as the number of mango fruits.
+- Handle non-string `s` input or a non-integer `n`.
+- Handle non-integer elements in the string `s`.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the string `s`.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle invalid string formats, such as missing numbers or incorrect number of fruits.
+- Handle non-integer elements in the string `s` or a negative `n`.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

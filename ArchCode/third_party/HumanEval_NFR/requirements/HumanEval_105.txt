@@ -1,0 +1,37 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a list of integers `arr` as input.
+- It returns a list of strings.
+
+## Expected Behavior
+- The function should sort the integers in `arr` that are between 1 and 9 (inclusive).
+- The function should reverse the resulting array.
+- The function should replace each digit in the reversed array with its corresponding name: "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine".
+- The function should return the list of names.
+
+## Edge Cases
+- Handle an empty `arr`, returning an empty list.
+- Handle an `arr` with no integers between 1 and 9, returning an empty list.
+- Handle an `arr` with strange numbers (e.g., negative numbers, numbers greater than 9), ignoring them and only considering integers between 1 and 9.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n log n) where n is the length of the `arr` list.
+- Space complexity: O(n) where n is the length of the `arr` list.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list `arr` input or non-integer elements in the `arr` list.
+- Handle invalid input such as characters or floating-point numbers in the `arr` list.
+
+### Reliability
+- Avoid index errors while accessing `arr` elements.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

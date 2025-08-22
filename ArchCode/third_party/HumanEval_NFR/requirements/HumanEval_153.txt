@@ -1,0 +1,32 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a string `class_name` and a list of strings `extensions` as input.
+- It returns a string.
+
+## Expected Behavior
+- The function should find the strongest extension from the list of extensions based on the given strength calculation and return it in the format: ClassName.StrongestExtensionName.
+
+## Edge Cases
+- Handle an empty `extensions` list, returning an empty string.
+- Handle non-string elements in the `extensions` list.
+- Handle an empty `class_name` string, returning an empty string.
+- Handle non-string `class_name` input.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the `extensions` list.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list `extensions` input or a non-string `class_name`.
+- Handle non-string elements in the `extensions` list.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

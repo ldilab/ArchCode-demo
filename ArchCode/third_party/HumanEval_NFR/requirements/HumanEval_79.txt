@@ -1,0 +1,29 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes an integer `decimal` as input.
+- It returns a string.
+
+## Expected Behavior
+- The function should convert the `decimal` number to its binary representation.
+- The binary representation should have the 'db' prefix and suffix.
+- Each character in the binary representation should be '0' or '1'.
+
+## Edge Cases
+- Handle a non-integer `decimal` input.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(log n), where n is the value of `decimal`.
+- Space complexity: O(log n).
+
+## Specific Quality Requirements
+### Robustness
+- Handle a non-integer `decimal` input.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.

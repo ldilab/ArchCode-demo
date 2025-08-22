@@ -1,0 +1,35 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a positive integer `n` as input.
+- It returns a list of integers.
+
+## Expected Behavior
+- The function should return a list where each element represents the number of stones in each level of the pile.
+- The number of stones in the first level is equal to `n`.
+- The number of stones in the next level is determined by the following rules:
+    - If `n` is odd, the number of stones in the next level is the next odd number.
+    - If `n` is even, the number of stones in the next level is the next even number.
+
+## Edge Cases
+- Handle a `n` value of 0, returning an empty list.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the value of `n`.
+- Space complexity: O(n) where n is the value of `n`.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-integer `n` input or negative `n`.
+
+### Reliability
+- Avoid arithmetic errors when calculating the number of stones in the next level.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.

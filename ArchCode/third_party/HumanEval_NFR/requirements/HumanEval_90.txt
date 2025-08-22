@@ -1,0 +1,34 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a list of integers `lst` as input.
+- It returns an integer or None.
+
+## Expected Behavior
+- The function should return the second smallest element in the input list.
+- If there is no second smallest element (e.g., the input list has less than 2 elements or contains duplicate elements), the function should return None.
+
+## Edge Cases
+- Handle an empty `lst` list, returning None.
+- Handle a list with only one element, returning None.
+- Handle a list with duplicate elements, returning None if all elements are the same.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n log n), where n is the length of the input list `lst`.
+- Space complexity: O(n), where n is the length of the input list `lst`.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list input or a list containing non-integer elements.
+
+### Reliability
+- Ensure the function returns correct results for all valid input cases.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.

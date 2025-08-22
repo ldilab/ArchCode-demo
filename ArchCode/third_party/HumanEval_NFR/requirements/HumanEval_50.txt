@@ -1,0 +1,34 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and other potential errors.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The `encode_shift` function takes a string `s` as input and returns an encoded string.
+- The `decode_shift` function takes a string `s` encoded with the `encode_shift` function as input and returns the decoded string.
+
+## Expected Behavior
+- The `encode_shift` function should return a string where each character is shifted by 5 positions in the alphabet.
+- The `decode_shift` function should return the decoded string from an encoded string.
+
+## Edge Cases
+- Handle an empty string input for both `encode_shift` and `decode_shift`, returning an empty string.
+- Handle non-string inputs for both `encode_shift` and `decode_shift`, raising a `TypeError`.
+- Handle inputs with non-alphabetic characters for `encode_shift`, leaving them unchanged in the encoded string.
+- Handle inputs with non-alphabetic characters for `decode_shift`, leaving them unchanged in the decoded string.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the input string.
+- Space complexity: O(n) where n is the length of the input string.
+- Ensure efficiency even for extremely large strings, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-string inputs or empty strings for `encode_shift` and `decode_shift`.
+- Handle non-alphabetic characters in the input strings.
+- Ensure the returned strings have the same length as the input strings.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.

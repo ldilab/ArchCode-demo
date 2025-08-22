@@ -1,0 +1,34 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a positive integer `number` as input.
+- It returns a string representing the roman numeral equivalent of the given number.
+
+## Expected Behavior
+- The function should correctly convert the given number to its roman numeral representation.
+- The roman numeral should be returned in lowercase.
+
+## Restrictions
+- The given number must be within the range of 1 to 1000 (inclusive).
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(1).
+- Space complexity: O(1).
+
+## Specific Quality Requirements
+### Robustness
+- Handle a non-integer input for the `number` argument.
+- Handle a number outside the valid range (1 to 1000).
+
+### Reliability
+- Ensure the function provides correct results for all valid input cases.
+- Ensure the function provides an appropriate error message for invalid input cases.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.
+- Ensure the code is well-structured, modular, and follows best practices for readability and maintainability.

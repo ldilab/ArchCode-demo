@@ -1,0 +1,31 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a list of integers `nums` as input.
+- It returns an integer representing the minimum sum of any non-empty subarray of `nums`.
+
+## Expected Behavior
+- The function should return the minimum sum of any non-empty subarray of `nums`.
+
+## Edge Cases
+- Handle an empty `nums` list, returning 0.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the `nums` list.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list `nums` input or non-integer elements in the `nums` list.
+
+### Reliability
+- Avoid index errors while accessing `nums` elements.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

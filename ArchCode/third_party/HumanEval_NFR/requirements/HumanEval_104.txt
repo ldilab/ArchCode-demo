@@ -1,0 +1,35 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a list of positive integers `x` as input.
+- It returns a sorted list of positive integers.
+
+## Expected Behavior
+- The function should return a list of all elements from `x` that do not contain any even digits.
+- The returned list should be sorted in increasing order.
+
+## Edge Cases
+- Handle an empty `x` list, returning an empty list.
+- Handle the case where no elements in `x` satisfy the condition, returning an empty list.
+- Handle multiple elements with the same value, returning any of them.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n * m) where n is the length of the `x` list and m is the average number of digits in each element of the list.
+- Space complexity: O(k) where k is the length of the returned list.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list `x` input or non-integer elements in the `x` list.
+- Handle negative integers in the `x` list.
+
+### Reliability
+- Avoid index errors while accessing `x` elements.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

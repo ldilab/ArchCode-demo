@@ -1,0 +1,32 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a list of integers `l` as input.
+- It returns a float representing the median of the elements in the list.
+
+## Expected Behavior
+- The function should return the median of the elements in the input list.
+- If the number of elements in the list is odd, the median is the middle element.
+- If the number of elements in the list is even, the median is the average of the two middle elements.
+
+## Edge Cases
+- Handle an empty `l`, returning `None`.
+- Handle a list with a single element, returning that element as the median.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n log n), where n is the length of the input list.
+- Space complexity: O(n), where n is the length of the input list.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list `l` input.
+- Handle non-integer elements in the `l` list.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.

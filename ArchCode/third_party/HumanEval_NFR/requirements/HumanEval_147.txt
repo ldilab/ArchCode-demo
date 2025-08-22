@@ -1,0 +1,36 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a positive integer `n` as input.
+- It returns an integer.
+
+## Expected Behavior
+- The function should create an integer array `a` of length `n` using the given formula.
+- It should count the number of triples `(a[i], a[j], a[k])` of `a` where `i < j < k` and `a[i] + a[j] + a[k]` is a multiple of 3.
+- It should return the final count of valid triples.
+
+## Edge Cases
+- Handle negative `n` values, returning 0.
+- Handle non-integer `n` values, returning 0.
+- Handle large `n` values efficiently, providing results within 5 seconds.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n^3) where n is the value of `n`.
+- Space complexity: O(n).
+- Ensure efficiency even for large values of `n`, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-integer input values for `n`.
+- Handle non-positive input values for `n`.
+
+### Reliability
+- Avoid index errors while accessing `a` elements.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

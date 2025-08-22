@@ -1,0 +1,37 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a list of strings `lst` as input.
+- It returns a list of strings.
+
+## Expected Behavior
+- The function should delete the strings with odd lengths from the input list.
+- The function should return the resulting list with a sorted order.
+- The sorting order should be ascending by the length of each word.
+- If two words have the same length, the function should sort the list alphabetically.
+
+## Edge Cases
+- Handle an empty `lst` list, returning an empty list.
+- Handle the case where all strings in `lst` have odd lengths, returning an empty list.
+- Handle the case where all strings in `lst` have the same length, returning the list sorted alphabetically.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(nlogn), where n is the length of the `lst` list.
+- Space complexity: O(n), where n is the length of the `lst` list.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list `lst` input.
+- Handle non-string elements in the `lst` list.
+
+### Reliability
+- Avoid index errors while accessing `lst` elements.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

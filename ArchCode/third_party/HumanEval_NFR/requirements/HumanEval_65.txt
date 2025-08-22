@@ -1,0 +1,35 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes an integer `x` and an integer `shift` as input.
+- It returns a string.
+
+## Expected Behavior
+- The function should circularly shift the digits of `x` to the right by `shift` positions.
+- If `shift` is greater than the number of digits in `x`, it should return the digits reversed.
+- The function should return the result as a string.
+
+## Edge Cases
+- Handle a negative `x` input, returning the result as a negative string.
+- Handle a non-integer `x` input or a non-integer `shift` input.
+- Handle the case where `x` is 0, returning "0".
+- Handle the case where `shift` is 0, returning `x` as a string.
+- Handle the case where `shift` is equal to or greater than the number of digits in `x`, returning the digits reversed.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the number of digits in `x`.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-integer digits in `x`.
+- Handle a zero `shift` input.
+- Handle a negative `shift` input.
+- Handle non-integer `shift` input.
+- Handle a non-integer `x` input.

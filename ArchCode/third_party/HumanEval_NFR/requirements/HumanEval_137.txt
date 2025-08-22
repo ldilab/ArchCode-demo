@@ -1,0 +1,35 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes two variables `a` and `b` as input.
+- It returns a variable of the same type as the input variables, representing the larger value. If the values are equal, it returns None.
+
+## Expected Behavior
+- The function should compare the values of `a` and `b` and return the larger value, taking into account the variable types.
+- If both values are equal, it should return None.
+
+## Edge Cases
+- Handle non-integer or non-float input variables, returning None.
+- Handle non-numeric string representations, returning None.
+- Handle string representations of real numbers with both "." and "," as the decimal separator.
+- Handle integer and float inputs, returning the larger value.
+- Handle string and numeric inputs, returning the larger value if possible. If not, return None.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(1).
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 1 second.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-numeric input variables.
+- Handle string representations of real numbers with incorrect formatting, such as missing or multiple decimal separators.
+- Handle NaN (Not a Number) and infinity values in the inputs.
+- Handle case sensitivity in string comparisons.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

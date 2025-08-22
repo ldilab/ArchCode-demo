@@ -1,0 +1,33 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes two string representations of fractions, `x` and `n`, as input.
+- It returns a boolean value.
+
+## Expected Behavior
+- The function should return True if the product of `x` and `n` evaluates to a whole number, and False otherwise.
+
+## Edge Cases
+- Handle invalid inputs, such as non-string or empty inputs, returning False.
+- Handle fractions with zero as the denominator, returning False.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(1).
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 1 second.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-string inputs or empty strings for `x` and `n`.
+- Handle invalid fraction strings, such as those with non-numeric characters or missing numerators/denominators.
+
+### Reliability
+- Ensure that the function correctly checks if the product of `x` and `n` is a whole number.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.

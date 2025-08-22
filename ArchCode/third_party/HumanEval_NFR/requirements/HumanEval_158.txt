@@ -1,0 +1,30 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a list of strings `words` as input.
+- It returns a string.
+
+## Expected Behavior
+- The function should return the word from the `words` list that has the maximum number of unique characters.
+- If there are multiple words with the same maximum number of unique characters, return the word that comes first in lexicographical order.
+
+## Edge Cases
+- Handle an empty `words` list, returning an empty string.
+- Handle the case where all words in `words` are empty strings, returning an empty string.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n * m) where n is the length of the `words` list and m is the average length of the words in the list.
+- Space complexity: O(n) where n is the length of the `words` list.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list `words` input or non-string elements in the `words` list.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

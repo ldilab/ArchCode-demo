@@ -1,0 +1,31 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and other common runtime errors.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a list of strings `strings` and a prefix string `prefix` as input.
+- It returns a list of strings.
+
+## Expected Behavior
+- The function should filter the input list `strings` and return only the strings that start with the given `prefix`.
+
+## Edge Cases
+- Handle an empty `strings` list, returning an empty list.
+- Handle the case where no strings in `strings` start with the given `prefix`, returning an empty list.
+- Handle multiple strings with the same prefix.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n*m) where n is the length of the `strings` list and m is the average length of the strings.
+- Space complexity: O(k) where k is the number of strings that start with the given prefix.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list `strings` input or a non-string `prefix`.
+- Handle empty strings in the `strings` list.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

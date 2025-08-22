@@ -1,0 +1,31 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a list of strings `strings` as input.
+- It returns an optional string.
+
+## Expected Behavior
+- The function should return the longest string from the input list `strings`.
+- If the input list is empty, the function should return None.
+- If multiple strings have the same longest length, the function should return the first occurrence.
+
+## Edge Cases
+- Handle an empty `strings` list, returning None.
+- Handle multiple strings with the same longest length, returning the first occurrence.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the `strings` list.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list `strings` input or non-string elements in the `strings` list.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.

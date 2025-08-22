@@ -1,0 +1,36 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes two positive integers `n` and `m` as input.
+- It returns a binary string.
+
+## Expected Behavior
+- If `n` is greater than `m`, the function should return -1.
+- The function should compute the average of the integers from `n` through `m` (including `n` and `m`).
+- The average should be rounded to the nearest integer.
+- The rounded average should be converted to a binary string.
+
+## Edge Cases
+- Handle non-positive `n` or `m` inputs, returning -1.
+- Handle the case where the average is a fraction, rounding to the nearest integer.
+- Handle the case where the average is exactly halfway between two integers, rounding to the nearest even integer.
+- Handle the case where `n` is equal to `m`, returning the binary representation of that number.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(1).
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 1 second.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-integer `n` or `m` inputs.
+- Handle non-positive integer `n` or `m` inputs.
+- Handle large integers where overflow may occur.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.
