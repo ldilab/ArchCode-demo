@@ -1,5 +1,6 @@
 import os
 import uuid
+import subprocess
 
 import docker
 from flask import Flask, request
@@ -18,16 +19,25 @@ def _execute(
     cpu_limit: int = 1,  # need cgroup support
     timeout: int = 5,
     trace: bool = False,
+    use_docker: bool = False,
     **kwargs,
 ):
     code_id = uuid.uuid4()
+
     if lang == "python":
-        image = f"custom-python:{version or 3.9}-slim"
+        image = f"jjkim0807/custom-python:{version or 3.9}-slim"
         ext = "py"
-        if trace:
-            command = f"/bin/sh -c \"timeout {timeout}s /bin/sh -c 'python3 -u -m trace --trace /code.{ext} < /stdin.in; echo Exit Code: $?;' || echo 'Timeout Error'\""
+        if use_docker:
+            code_file_name = f"/code.{ext}"
+            stdin_file_name = f"/stdin.in"
         else:
-            command = f"/bin/sh -c \"timeout {timeout}s /bin/sh -c 'python3 -u /code.{ext} < /stdin.in; echo Exit Code: $?;' || echo 'Timeout Error'\""
+            code_file_name = f"/tmp/{code_id}.{ext}"
+            stdin_file_name = f"/tmp/{code_id}.in"
+
+        if trace:
+            command = f"/bin/sh -c \"timeout {timeout}s /bin/sh -c 'python3 -u -m trace --trace {code_file_name} < {stdin_file_name}; echo Exit Code: $?;' || echo 'Timeout Error'\""
+        else:
+            command = f"/bin/sh -c \"timeout {timeout}s /bin/sh -c 'python3 -u {code_file_name} < {stdin_file_name}; echo Exit Code: $?;' || echo 'Timeout Error'\""
     elif lang == "c":
         raise NotImplementedError("C is not supported yet")
     elif lang == "cpp":
@@ -36,12 +46,6 @@ def _execute(
         raise NotImplementedError("Java is not supported yet")
     else:
         raise ValueError("Invalid language")
-
-    # if the image is not available, pull it
-    try:
-        client.images.get(image)
-    except docker.errors.ImageNotFound:
-        client.images.pull(image)
 
     # save code to a tmp file
     code_file = f"/tmp/{code_id}.{ext}"
@@ -53,45 +57,71 @@ def _execute(
     with open(stdin_file, "w") as f:
         f.write(stdin)
 
-    container_name = f"CodeExecContainer_{code_id}"
-    try:
-        # worker_id = os.getenv("GUNICORN_WORKER_ID", "0")
-        # cpu_start = int(worker_id) * cpu_limit
-        # cpu_end = cpu_start + cpu_limit - 1
-        # cpuset_cpus = f"{cpu_start}-{cpu_end}" if cpu_limit > 1 else f"{cpu_start}"
+    if use_docker:
+        # if the image is not available, pull it
+        try:
+            client.images.get(image)
+        except docker.errors.ImageNotFound:
+            client.images.pull(image)
 
-        container = client.containers.run(
-            image,
-            command,
-            name=container_name,
-            detach=True,
-            stderr=True,
-            stdout=True,
-            tty=True,
-            # cpuset_cpus=cpuset_cpus,  # need cgroup support
-            mem_limit=mem_limit,
-            volumes={
-                code_file: {"bind": f"/code.{ext}", "mode": "ro"},
-                stdin_file: {"bind": "/stdin.in", "mode": "ro"},
-            },
-            environment={"PYTHONUNBUFFERED": "1"},
-        )
-        container.wait()
-        response = container.logs().decode("utf-8")
-        container.remove()
+        container_name = f"CodeExecContainer_{code_id}"
+        try:
+            # worker_id = os.getenv("GUNICORN_WORKER_ID", "0")
+            # cpu_start = int(worker_id) * cpu_limit
+            # cpu_end = cpu_start + cpu_limit - 1
+            # cpuset_cpus = f"{cpu_start}-{cpu_end}" if cpu_limit > 1 else f"{cpu_start}"
 
-        os.remove(code_file)
-        os.remove(stdin_file)
-        return response
+            container = client.containers.run(
+                image,
+                command,
+                name=container_name,
+                detach=True,
+                stderr=True,
+                stdout=True,
+                tty=True,
+                # cpuset_cpus=cpuset_cpus,  # need cgroup support
+                mem_limit=mem_limit,
+                volumes={
+                    code_file: {"bind": f"/code.{ext}", "mode": "ro"},
+                    stdin_file: {"bind": "/stdin.in", "mode": "ro"},
+                },
+                environment={"PYTHONUNBUFFERED": "1"},
+            )
+            container.wait()
+            response = container.logs().decode("utf-8")
+            container.remove()
 
-    except docker.errors.ContainerError as e:
-        os.remove(code_file)
-        os.remove(stdin_file)
-        return e.stderr.decode("utf-8")
-    except Exception as e:
-        os.remove(code_file)
-        os.remove(stdin_file)
-        return str(e)
+            os.remove(code_file)
+            os.remove(stdin_file)
+            return response
+
+        except docker.errors.ContainerError as e:
+            os.remove(code_file)
+            os.remove(stdin_file)
+            return e.stderr.decode("utf-8")
+        except Exception as e:
+            os.remove(code_file)
+            os.remove(stdin_file)
+            return str(e)
+
+    else:
+        # Running a simple command
+        try:
+            result = subprocess.run(
+                command,
+                shell=True,
+                capture_output=True,
+                text=True,
+            )
+            print("Stdout:", result.stdout)
+
+            return result.stdout
+        except Exception as e:
+            return e
+        finally:
+            os.remove(code_file)
+            os.remove(stdin_file)
+
 
 
 @app.route("/execute", methods=["POST"])

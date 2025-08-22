@@ -65,6 +65,27 @@ class Server(BaseModel):
             - candidate_num: int = 10
         """
 
+        """
+        Example response: Streaming
+        {"requirements_raw": [str], "requirements": [str]}
+        {"plan_raw": [str], "plan": [str]}
+        {"gen_tc_raw": [str], "gen_tc": {
+                                                    "fr": "",
+                                                    "general": "",
+                                                    "edge": "",
+                                                    "nfr": "",
+                                                    "performance": "",
+                                                    "sqr": "",
+                                                    "robustness": "",
+                                                    "maintainability": ""
+                                                }}
+        {"code_raw": [str], "code": [str]}
+        {"gen_tc_exec_code": [[str]]}
+        {"gen_tc_exec_result": [[str]]} # "Exit Code: 0\n"
+        {"gen_tc_passed": [[bool]]}
+
+        """
+
         @app.route("/generate", methods=["POST"])
         async def generate():
             data = await request.get_json()
@@ -101,7 +122,7 @@ class Server(BaseModel):
 
             return Response(_generate(), content_type="application/json")
 
-        await app.run_task(port=port)
+        await app.run_task(port=port, host="0.0.0.0")
 
     def _update_config(self, candidate_num: int, llm_kwargs: dict):
         new_config = deepcopy(self._default_config)

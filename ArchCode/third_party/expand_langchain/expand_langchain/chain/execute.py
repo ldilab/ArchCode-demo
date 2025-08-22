@@ -50,6 +50,7 @@ def execute_chain(
                             **kwargs,
                         },
                     )
+                    print(response)
                     output = response["output"]
                     outputs.append(output)
                 result[key].append(outputs)
