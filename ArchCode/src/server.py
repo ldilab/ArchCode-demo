@@ -5,8 +5,12 @@ from expand_langchain.config import Config
 from expand_langchain.generator import Generator
 from pydantic import BaseModel
 from quart import Quart, Response, jsonify, request
+from quart_cors import cors
+
 
 app = Quart(__name__)
+app = cors(app, allow_origin="*") # Allows all origins for simplicity, adjust as needed
+
 
 
 DEFAULT_LLM_KWARGS = {
