@@ -1,4 +1,5 @@
 import json
+import os
 from copy import deepcopy
 
 from expand_langchain.config import Config
@@ -90,12 +91,18 @@ class Server(BaseModel):
 
         """
 
+        @app.route("/health", methods=["GET"])
+        def health_check():
+            return {"ok": True}
+
+
         @app.route("/generate", methods=["POST"])
         async def generate():
             data = await request.get_json()
             nl_query = data["nl_query"]
             llm_kwargs = data.get("llm_kwargs", DEFAULT_LLM_KWARGS)
             candidate_num = data.get("candidate_num", 10)
+            api_key = data.get("api_key", None)
 
             async def _generate():
                 config = self._update_config(
@@ -124,9 +131,18 @@ class Server(BaseModel):
                 async for result in gen:
                     yield json.dumps(result) + "\n"
 
+            if api_key:
+                os.environ["OPENAI_API_KEY"] = api_key
+            else:
+                os.environ["OPENAI_API_KEY"] = ""
+
+            print(f"{os.environ['CODEEXEC_ENDPOINT']=}")
+
             return Response(_generate(), content_type="application/json")
 
         await app.run_task(port=port, host="0.0.0.0")
+
+
 
     def _update_config(self, candidate_num: int, llm_kwargs: dict):
         new_config = deepcopy(self._default_config)

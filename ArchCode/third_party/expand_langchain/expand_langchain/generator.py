@@ -80,7 +80,8 @@ class Generator(BaseModel):
     def _load_api_keys(self):
         api_keys = json.loads(Path(self.api_keys_path).read_text())
         for k, v in api_keys.items():
-            os.environ[k] = v
+            if os.getenv(k) is None:
+                os.environ[k] = v
 
     def _load_datasets(self):
         loader = Loader(config=self.config)

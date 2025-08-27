@@ -4,7 +4,7 @@
 // TailwindCSS + lucide-react (icons) + @monaco-editor/react
 // Now uses real NDJSON streaming from REST API (no local seeding)
 
-import React, { useMemo, useState, useEffect, useRef } from "react";
+import React, { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { Brain, FileText, Beaker, Code as CodeIcon, CheckCircle2, Copy as CopyIcon, Settings, Square as StopIcon } from "lucide-react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
@@ -251,21 +251,60 @@ function MonoBlock({ code, className }) {
 }
 
 function CopyButton({ text }) {
-    const [copied, setCopied] = useState(false);
+    const { copy, copied, error } = useClipboard();
     return (
         <button
-            onClick={() => {
-                navigator.clipboard.writeText(text).then(() => {
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 1200);
-                });
-            }}
+            onClick={() => copy(text)}
             className="inline-flex items-center gap-1 rounded-xl border px-2.5 py-1 text-sm hover:bg-gray-50"
-            title="Copy to clipboard"
+            title={error ? `Copy failed: ${String(error)}` : "Copy to clipboard"}
+            aria-live="polite"
         >
             <CopyIcon className="h-4 w-4" /> {copied ? "Copied!" : "Copy"}
         </button>
     );
+}
+
+
+export function useClipboard() {
+    const [copied, setCopied] = useState(false);
+    const [error, setError] = useState(null);
+
+    const copy = useCallback(async (text) => {
+        setCopied(false);
+        setError(null);
+
+        try {
+            if (navigator?.clipboard?.writeText) {
+                // 최신 API (보안 컨텍스트 + 유저 제스처 필요)
+                await navigator.clipboard.writeText(text);
+                setCopied(true);
+                return true;
+            }
+
+            // ---- 폴백: 구형 브라우저 ----
+            const textarea = document.createElement("textarea");
+            textarea.value = text;
+            // iOS 대응: 화면 밖에 두되 선택 가능해야 함
+            textarea.style.position = "fixed";
+            textarea.style.top = "-9999px";
+            textarea.setAttribute("readonly", "");
+            document.body.appendChild(textarea);
+            textarea.select();
+            textarea.setSelectionRange(0, text.length); // iOS
+
+            const ok = document.execCommand("copy");
+            document.body.removeChild(textarea);
+
+            if (!ok) throw new Error("execCommand copy failed");
+            setCopied(true);
+            return true;
+        } catch (e) {
+            setError(e);
+            return false;
+        }
+    }, []);
+
+    return { copy, copied, error };
 }
 
 // --------------------------- Main Component ---------------------------
@@ -294,6 +333,8 @@ export default function CanvasCodeSynthesis() {
         strategy: "greedy",
         kwargs: { temperature: 0.8, top_p: 1.0, max_tokens: 2048 },
     });
+    const [apiKey, setApiKey] = useState("");
+
     const [showLlm, setShowLlm] = useState(false);
 
     const [sortKey, setSortKey] = useState("score");
@@ -354,18 +395,10 @@ export default function CanvasCodeSynthesis() {
         nucleus_kwargs: { ...llm.kwargs },
     });
 
-    const splitLines = (val) => String(val || "")
-        .split(/\r?\n/)
-        .map((s) => s.trim())
-        .filter(Boolean);
-
-    const pickReqId = (reqs, preferred) => {
-        const ids = new Set((reqs || []).map((r) => r.id));
-        if (preferred && ids.has(preferred)) return preferred;
-        if (ids.has("fr-behavior")) return "fr-behavior";
-        if (ids.has("fr-1")) return "fr-1";
-        return Array.from(ids)[0];
-    };
+    const makeUID = () =>
+        (typeof crypto !== "undefined" && crypto.randomUUID)
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
     const handleStreamMessage = (msg) => {
         // --- REQUIREMENTS ---
@@ -457,7 +490,7 @@ export default function CanvasCodeSynthesis() {
                     (joined.length ? joined : [stripFences(chunk)]).forEach((code, idx) => {
                         const payload = code.includes("assert") || code.includes("try:") ? code : stripFences(chunk);
                         if (!payload.trim()) return;
-                        const id = `st-${cat}-${Date.now()}-${idx}`;
+                        const id = `st-${cat}-${makeUID()}`;
                         newTests.push({ id, title: `${cat.toUpperCase()} ${idx + 1}`, code: payload, fromReqIds: [rid] });
                     });
                 });
@@ -602,13 +635,15 @@ export default function CanvasCodeSynthesis() {
             nl_query: problem.trim(),
             llm_kwargs: buildServerLlmKwargs(llm),
             candidate_num: sampleCount,
+            api_key: apiKey || undefined,
         };
 
         const controller = new AbortController();
         abortRef.current = controller;
 
         try {
-            const res = await fetch("http://ldi.snu.ac.kr:8005/generate", {
+            console.log(import.meta.env.VITE_API_URL)
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/generate`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
@@ -733,11 +768,16 @@ export default function CanvasCodeSynthesis() {
     const hasEmptyCategory = [...functionalGroups, ...nonfunctionalGroups].some(g => (g.tests || []).length === 0);
 
 
+
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 text-slate-900">
             <header className="sticky top-0 z-40 bg-white/70 backdrop-blur border-b">
                 <div className="max-w-6xl mx-auto px-4 h-12 flex items-center justify-between">
-                    <span className="text-slate-800 font-bold tracking-tight">ARCHCODE</span>
+                    <span className="text-slate-800 font-bold tracking-tight">
+                        <img src="/ldi-logo.svg" width={30} height={30} />
+                        ARCHCODE
+                    </span>
                     <div className="flex items-center gap-2">
                         {streaming ? (
                             <span className="inline-flex items-center gap-2 text-xs text-violet-700 bg-violet-50 border border-violet-200 px-2 py-1 rounded-full">
@@ -801,6 +841,18 @@ export default function CanvasCodeSynthesis() {
 
                         {showLlm && (
                             <div className="mt-3 rounded-xl border bg-white p-3 space-y-3">
+                                {/* API Key */}
+                                <div>
+                                    <label className="text-sm block mb-1 text-slate-600">API Key</label>
+                                    <input
+                                        type="password"
+                                        placeholder="Enter your API key"
+                                        className="w-full border rounded-md px-2 py-1"
+                                        value={apiKey}
+                                        onChange={(e) => setApiKey(e.target.value)}
+                                    />
+                                </div>
+
                                 {/* Platform → Model → Decoding */}
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                                     <label className="text-sm">
@@ -811,9 +863,9 @@ export default function CanvasCodeSynthesis() {
                                             onChange={(e) => setLlm(prev => ({ ...prev, platform: e.target.value }))}
                                         >
                                             <option value="openai">openai</option>
-                                            <option value="azure">azure</option>
-                                            <option value="anthropic">anthropic</option>
-                                            <option value="other">other</option>
+                                            <option disabled value="azure">azure</option>
+                                            <option disabled value="anthropic">anthropic</option>
+                                            <option disabled value="other">other</option>
                                         </select>
                                     </label>
                                     <label className="text-sm">
@@ -896,7 +948,7 @@ export default function CanvasCodeSynthesis() {
                         {/* 서버 원문 요구사항 미리보기 */}
                         {Array.isArray(bundle?.stream?.requirements) && bundle.stream.requirements[0] && (
                             <details className="mb-3">
-                                <summary className="text-sm text-slate-600 cursor-pointer">View raw requirements (from server)</summary>
+                                <summary className="text-sm text-slate-600 cursor-pointer">View raw requirements</summary>
                                 <MonoBlock className="mt-2" code={bundle.stream.requirements[0]} />
                             </details>
                         )}
@@ -1000,7 +1052,7 @@ export default function CanvasCodeSynthesis() {
                         {hasEmptyCategory && rawGenTcText ? (
                             <div className="mt-4">
                                 <div className="text-xs uppercase tracking-wider text-slate-500 mb-1">
-                                    Fallback: Raw generated tests (from server)
+                                    Fallback: Raw generated tests
                                 </div>
                                 <MonoBlock code={rawGenTcText} />
                             </div>
@@ -1008,7 +1060,7 @@ export default function CanvasCodeSynthesis() {
                     </CardBox>
 
                     {/* Plans */}
-                    <CardBox icon={<FileText className="h-5 w-5" />} title="Plan (from server)">
+                    <CardBox icon={<FileText className="h-5 w-5" />} title="Plan">
                         {Array.isArray(bundle?.stream?.plan) && bundle.stream.plan.length ? (
                             <div className="space-y-2">
                                 {bundle.stream.plan.map((p, i) => (
@@ -1103,13 +1155,13 @@ export default function CanvasCodeSynthesis() {
                                                 </div>
                                             </div>
 
-                                            <div className="mt-2 flex flex-wrap gap-1">
-                                                {tagBadges.map((t, i) => (
-                                                    <Badge key={i} className="bg-slate-50 border-slate-200">
-                                                        {t}
-                                                    </Badge>
-                                                ))}
-                                            </div>
+                                            {/*<div className="mt-2 flex flex-wrap gap-1">*/}
+                                            {/*    {tagBadges.map((t, i) => (*/}
+                                            {/*        <Badge key={i} className="bg-slate-50 border-slate-200">*/}
+                                            {/*            {t}*/}
+                                            {/*        </Badge>*/}
+                                            {/*    ))}*/}
+                                            {/*</div>*/}
                                         </div>
                                     );
                                 })}
@@ -1147,15 +1199,15 @@ export default function CanvasCodeSynthesis() {
                                         }}
                                     />
                                 </div>
-                                <div className="grid grid-cols-2 gap-2">
-                                    <div className="rounded-xl border p-3"><div className="text-xs text-slate-500">Complexity</div><div className="font-medium">{selected.metrics.timeComplexityLabel}</div></div>
-                                    <div className="rounded-xl border p-3"><div className="text-xs text-slate-500">Cyclomatic</div><div className="font-medium">{selected.metrics.cyclomaticComplexity}</div></div>
-                                    <div className="rounded-xl border p-3"><div className="text-xs text-slate-500">Robust</div><div className="font-medium">{selected.metrics.robustInputChecks ? "Yes" : "No"}</div></div>
-                                    <div className="rounded-xl border p-3"><div className="text-xs text-slate-500">Edge-safe</div><div className="font-medium">{selected.metrics.handlesNegativesAndZero ? "Yes" : "No"}</div></div>
-                                </div>
-                                <div className="inline-flex items-center gap-2 text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-3 py-1 text-sm">
-                                    Manually selected
-                                </div>
+                                {/*<div className="grid grid-cols-2 gap-2">*/}
+                                {/*    <div className="rounded-xl border p-3"><div className="text-xs text-slate-500">Complexity</div><div className="font-medium">{selected.metrics.timeComplexityLabel}</div></div>*/}
+                                {/*    <div className="rounded-xl border p-3"><div className="text-xs text-slate-500">Cyclomatic</div><div className="font-medium">{selected.metrics.cyclomaticComplexity}</div></div>*/}
+                                {/*    <div className="rounded-xl border p-3"><div className="text-xs text-slate-500">Robust</div><div className="font-medium">{selected.metrics.robustInputChecks ? "Yes" : "No"}</div></div>*/}
+                                {/*    <div className="rounded-xl border p-3"><div className="text-xs text-slate-500">Edge-safe</div><div className="font-medium">{selected.metrics.handlesNegativesAndZero ? "Yes" : "No"}</div></div>*/}
+                                {/*</div>*/}
+                                {/*<div className="inline-flex items-center gap-2 text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-3 py-1 text-sm">*/}
+                                {/*    Manually selected*/}
+                                {/*</div>*/}
                             </div>
                         )}
                     </CardBox>

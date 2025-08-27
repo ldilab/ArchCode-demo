@@ -116,12 +116,18 @@ def _execute(
             print("Stdout:", result.stdout)
 
             return result.stdout
+
         except Exception as e:
-            return e
+            return str(e)
+
         finally:
             os.remove(code_file)
             os.remove(stdin_file)
 
+
+@app.route("/health", methods=["GET"])
+def health_check():
+    return {"ok": True}
 
 
 @app.route("/execute", methods=["POST"])
