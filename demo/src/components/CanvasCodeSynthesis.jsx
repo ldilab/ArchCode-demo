@@ -2,10 +2,21 @@
 // ------------------------------------------------------------
 // Pure JSX version (no TypeScript types) of the canvas-style webapp.
 // TailwindCSS + lucide-react (icons) + @monaco-editor/react
-// Now uses real NDJSON streaming from REST API (no local seeding)
+// Uses real NDJSON streaming from REST API
 
 import React, { useMemo, useState, useEffect, useRef, useCallback } from "react";
-import { Brain, FileText, Beaker, Code as CodeIcon, CheckCircle2, Copy as CopyIcon, Settings, Square as StopIcon } from "lucide-react";
+import {
+    Brain,
+    FileText,
+    Beaker,
+    Code as CodeIcon,
+    CheckCircle2,
+    Copy as CopyIcon,
+    Settings,
+    Square as StopIcon,
+    KeyRound,
+    AlertCircle,
+} from "lucide-react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import Editor from "@monaco-editor/react";
@@ -84,89 +95,15 @@ function scoreCandidate(c, reqs) {
     return { score, reasons, ok: functionalOK };
 }
 
-// const stripFences = (s) => {
-//     if (!s) return "";
-//     let t = String(s).trim();
-//     // ```lang ... ``` 제거
-//     t = t.replace(/^```[a-zA-Z]*\s*/m, "").replace(/```$/m, "").trim();
-//     return t;
-// };
-
-// 서버의 문서형 요구사항 텍스트를 우리의 요구사항 카드로 변환
-function normalizeRequirementsFromServer(text) {
-    const s = stripFences(text);
-
-    // 기본 카드(우리 UI가 테스트를 잘 꽂기 위해 필요한 고정 ID들)
-    const reqs = [
-        { id: "fr-io", kind: "functional", title: "Input / Output", details: ["Takes integers n, x, y; returns x if prime(n) else y"], mandatory: true },
-        { id: "fr-behavior", kind: "functional", title: "Behavior", details: ["Return x when n is prime; otherwise y"], mandatory: true },
-        { id: "fr-edges", kind: "functional", title: "Edge cases", details: ["n < 2 → y", "n = 0 → y", "handle negatives → y"] },
-        { id: "nfr-perf", kind: "nonfunctional", category: "performance", title: "Performance", details: ["Time O(√n)", "Space O(1)"] },
-        { id: "nfr-robust", kind: "nonfunctional", category: "robustness", title: "Robustness", details: ["If any of n,x,y not int → print error to stderr and return None"] },
-        { id: "nfr-maint", kind: "nonfunctional", category: "maintainability", title: "Maintainability", details: ["Maintainability Index ≥ 60"] },
-    ];
-
-    // 텍스트 안에 추가로 등장하는 항목을 디테일에 보강(옵션)
-    if (/Space complexity:\s*O\(1\)/i.test(s)) {
-        const r = reqs.find(r => r.id === "nfr-perf");
-        if (r && !r.details.includes("Space O(1)")) r.details.push("Space O(1)");
-    }
-    if (/Time complexity:\s*O\s*\(\s*sqrt\(\s*n\s*\)\s*\)/i.test(s) || /O\(sqrt\(n\)\)/i.test(s)) {
-        const r = reqs.find(r => r.id === "nfr-perf");
-        if (r && !r.details.some(d => /O\(√?n\)/.test(d))) r.details.unshift("Time O(√n)");
-    }
-    if (/Reliability/i.test(s)) {
-        reqs.push({ id: "nfr-reliability", kind: "nonfunctional", category: "reliability", title: "Reliability", details: ["Consistent prime/non-prime distinction incl. edges"] });
-    }
-
-    return reqs;
-}
-
-function groupTestsByRequirement(allTests, reqs) {
-    const byReq = new Map(reqs.map(r => [r.id, { req: r, tests: [] }]));
-    (allTests || []).forEach(t => {
-        const links = Array.isArray(t.fromReqIds) ? t.fromReqIds : [];
-        if (!links.length) return;
-        links.forEach(rid => {
-            if (!byReq.has(rid)) return;
-            byReq.get(rid).tests.push(t);
-        });
-    });
-    return Array.from(byReq.values());
-}
-
-function coverageBadge(count) {
-    if (count === 0) return { text: "No tests", className: "bg-rose-50 border-rose-200 text-rose-700" };
-    if (count <= 2) return { text: `${count} test`, className: "bg-amber-50 border-amber-200 text-amber-700" };
-    return { text: `${count} tests`, className: "bg-emerald-50 border-emerald-200 text-emerald-700" };
-}
-
-// (선택) 테스트 코드 내 함수명을 UI에서 통일해서 보여주고 싶다면:
-function normalizeDisplayedTestCode(code, canonicalName = "prime_or_not") {
-    return String(code || "")
-        .replace(/\breturn_value_based_on_prime\b/g, canonicalName)
-        .replace(/\bprime_check\b/g, canonicalName)
-        .replace(/\bcheck_prime_return\b/g, canonicalName);
-}
-
-
 const stripFences = (s) => {
     if (!s) return "";
-    return String(s).trim()
-        .replace(/^```[a-zA-Z]*\s*/m, "")
-        .replace(/```$/m, "")
-        .trim();
+    return String(s).trim().replace(/^```[a-zA-Z]*\s*/m, "").replace(/```$/m, "").trim();
 };
 
 // 서버 요구사항 텍스트를 계층 트리로 파싱
 function parseRequirementsHierarchy(text) {
     const s = stripFences(text).replace(/\r/g, "");
     const lines = s.split("\n");
-
-    // 간단한 마크다운 파서: 제목 라인과 "- " 들여쓰기 단계로 트리 생성
-    // 규칙
-    // - 최상위 제목은 " - Problem Agnostic Requirements" 처럼 시작(혹은 "Functional Requirements")
-    // - 하위는 "  - ..." 식 들여쓰기(2공백=1뎁스)로 판단
     function depthOf(line) {
         const m = line.match(/^(\s*)-\s+/);
         if (!m) return -1;
@@ -177,16 +114,15 @@ function parseRequirementsHierarchy(text) {
     }
 
     const root = { id: "root", title: "root", children: [] };
-    const stack = [ { node: root, depth: -1 } ];
+    const stack = [{ node: root, depth: -1 }];
 
-    lines.forEach(raw => {
+    lines.forEach((raw) => {
         const d = depthOf(raw);
         if (d < 0) return;
         const title = contentOf(raw);
         const node = { id: `node-${Math.random().toString(36).slice(2, 8)}`, title, children: [] };
-        // 스택 정리
-        while (stack.length && stack[stack.length-1].depth >= d) stack.pop();
-        stack[stack.length-1].node.children.push(node);
+        while (stack.length && stack[stack.length - 1].depth >= d) stack.pop();
+        stack[stack.length - 1].node.children.push(node);
         stack.push({ node, depth: d });
     });
 
@@ -215,6 +151,7 @@ function mapTitleToReqId(title) {
 
     return null; // 테스트 연결 없는 일반 설명 노드
 }
+
 // --------------------------- Small UI bits ---------------------------
 
 function Badge({ children, className = "" }) {
@@ -264,7 +201,6 @@ function CopyButton({ text }) {
     );
 }
 
-
 export function useClipboard() {
     const [copied, setCopied] = useState(false);
     const [error, setError] = useState(null);
@@ -275,26 +211,20 @@ export function useClipboard() {
 
         try {
             if (navigator?.clipboard?.writeText) {
-                // 최신 API (보안 컨텍스트 + 유저 제스처 필요)
                 await navigator.clipboard.writeText(text);
                 setCopied(true);
                 return true;
             }
-
-            // ---- 폴백: 구형 브라우저 ----
             const textarea = document.createElement("textarea");
             textarea.value = text;
-            // iOS 대응: 화면 밖에 두되 선택 가능해야 함
             textarea.style.position = "fixed";
             textarea.style.top = "-9999px";
             textarea.setAttribute("readonly", "");
             document.body.appendChild(textarea);
             textarea.select();
-            textarea.setSelectionRange(0, text.length); // iOS
-
+            textarea.setSelectionRange(0, text.length);
             const ok = document.execCommand("copy");
             document.body.removeChild(textarea);
-
             if (!ok) throw new Error("execCommand copy failed");
             setCopied(true);
             return true;
@@ -333,7 +263,12 @@ export default function CanvasCodeSynthesis() {
         strategy: "greedy",
         kwargs: { temperature: 0.8, top_p: 1.0, max_tokens: 2048 },
     });
+
+    // API key & modal
     const [apiKey, setApiKey] = useState("");
+    const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+    const [rememberKey, setRememberKey] = useState(true);
+    const [tmpApiKey, setTmpApiKey] = useState("");
 
     const [showLlm, setShowLlm] = useState(false);
 
@@ -343,10 +278,18 @@ export default function CanvasCodeSynthesis() {
 
     const [streaming, setStreaming] = useState(false);
     const [error, setError] = useState(null);
-    const [logLines, setLogLines] = useState([]); // optional: keep last N raw lines
+    const [logLines, setLogLines] = useState([]);
     const abortRef = useRef(null);
 
     const tailwindOK = useTailwindPresence();
+
+    // Load saved API key (optional)
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem("archcode_api_key");
+            if (saved) setApiKey(saved);
+        } catch {}
+    }, []);
 
     const reqIndexMap = useMemo(() => new Map((bundle?.requirements ?? []).map((r, i) => [r.id, i])), [bundle]);
     const colorFor = (rid) => {
@@ -363,9 +306,9 @@ export default function CanvasCodeSynthesis() {
         const total = bundle?.tests?.length ?? 0;
         return (bundle.candidates || []).map((c) => {
             const tr = trSource[c.id] || {};
-            const pass = tr.pass ?? 0;        // 🔹 boolean 합계
-            const score = pass;               // 🔹 Score = 통과 개수
-            const { ok } = scoreCandidate(c, bundle.requirements); // FR 충족 여부는 그대로
+            const pass = tr.pass ?? 0;
+            const score = pass;
+            const { ok } = scoreCandidate(c, bundle.requirements);
             return { c, score, ok, pass, total };
         });
     }, [bundle]);
@@ -390,40 +333,35 @@ export default function CanvasCodeSynthesis() {
     const buildServerLlmKwargs = (llm) => ({
         model_name: llm.model_name,
         platform: llm.platform,
-        // 서버 스펙상 둘 다 요구됨 — 동일 kwargs를 양쪽에 넣어줌
         greedy_kwargs: { ...llm.kwargs },
         nucleus_kwargs: { ...llm.kwargs },
     });
 
     const makeUID = () =>
-        (typeof crypto !== "undefined" && crypto.randomUUID)
-            ? crypto.randomUUID()
-            : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+        (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`);
 
     const handleStreamMessage = (msg) => {
         // --- REQUIREMENTS ---
         if (msg.requirements || msg.requirements_raw) {
-            setBundle(prev => {
-                const rawArr = Array.isArray(msg.requirements) ? msg.requirements
-                    : Array.isArray(msg.requirements_raw) ? msg.requirements_raw
+            setBundle((prev) => {
+                const rawArr = Array.isArray(msg.requirements)
+                    ? msg.requirements
+                    : Array.isArray(msg.requirements_raw)
+                        ? msg.requirements_raw
                         : [];
                 const fullText = rawArr[0] ?? "";
 
                 const tree = parseRequirementsHierarchy(fullText);
 
-                // 카드형 요건 리스트도 유지 (테스트 정렬/점수 계산에 필요)
-                // 트리에서 등장하는 타이틀을 기반으로 ID 세트 수집
                 const idsSeen = new Set();
-                function walk(nodes) {
-                    nodes.forEach(n => {
+                (function walk(nodes) {
+                    nodes.forEach((n) => {
                         const id = mapTitleToReqId(n.title);
                         if (id) idsSeen.add(id);
                         if (n.children?.length) walk(n.children);
                     });
-                }
-                walk(tree);
+                })(tree);
 
-                // 우리 UI가 기대하는 핵심 카드들만 재구성
                 const reqCatalog = [
                     { id: "fr-io", kind: "functional", title: "Input / Output", details: ["Takes integers n, x, y; returns x if prime(n), else y"], mandatory: true },
                     { id: "fr-behavior", kind: "functional", title: "Expected Behavior", details: ["Return x when n is prime; otherwise y"], mandatory: true },
@@ -432,7 +370,7 @@ export default function CanvasCodeSynthesis() {
                     { id: "nfr-robust", kind: "nonfunctional", category: "robustness", title: "Robustness", details: ["Non-integer n/x/y → print to stderr & return None"] },
                     { id: "nfr-reliability", kind: "nonfunctional", category: "reliability", title: "Reliability", details: ["Consistent prime/non-prime distinction incl. edges"] },
                     { id: "nfr-maint", kind: "nonfunctional", category: "maintainability", title: "Maintainability", details: ["Maintainability Index ≥ 60"] },
-                ].filter(r => idsSeen.has(r.id)); // 서버 텍스트에 등장한 항목만 남김(원하면 제거)
+                ].filter((r) => idsSeen.has(r.id));
 
                 return {
                     ...prev,
@@ -441,7 +379,7 @@ export default function CanvasCodeSynthesis() {
                         ...(prev.stream || {}),
                         requirements_raw: rawArr,
                         requirements_text: stripFences(fullText),
-                        requirements_tree: tree, // 🔹 트리를 그대로 저장
+                        requirements_tree: tree,
                     },
                 };
             });
@@ -450,10 +388,9 @@ export default function CanvasCodeSynthesis() {
 
         // --- PLAN ---
         if (msg.plan || msg.plan_raw) {
-            // 둘 다 배열 — UI에 보기 좋게 합쳐 저장
             const plan = Array.isArray(msg.plan) ? msg.plan : [];
             const planRaw = Array.isArray(msg.plan_raw) ? msg.plan_raw : [];
-            setBundle(prev => ({
+            setBundle((prev) => ({
                 ...prev,
                 stream: {
                     ...(prev.stream || {}),
@@ -466,7 +403,7 @@ export default function CanvasCodeSynthesis() {
 
         // --- GENERATED TEST CASES (gen_tc) ---
         if (msg.gen_tc || msg.gen_tc_raw) {
-            const body = Array.isArray(msg.gen_tc) ? (msg.gen_tc[0] || {}) : (msg.gen_tc || {});
+            const body = Array.isArray(msg.gen_tc) ? (msg.gen_tc[0] || {}) : msg.gen_tc || {};
             const rawArr = Array.isArray(msg.gen_tc_raw) ? msg.gen_tc_raw : [];
             const rawText = rawArr[0] ? stripFences(rawArr[0]) : "";
 
@@ -481,12 +418,12 @@ export default function CanvasCodeSynthesis() {
                 sqr: "nfr-maint",
             };
 
-            setBundle(prev => {
+            setBundle((prev) => {
                 const newTests = prev.tests ? prev.tests.slice() : [];
                 Object.entries(body).forEach(([cat, chunk]) => {
-                    if (!chunk || !String(chunk).trim()) return; // 빈 카테고리 스킵
+                    if (!chunk || !String(chunk).trim()) return;
                     const rid = catToReq[cat] || "fr-behavior";
-                    const joined = stripFences(chunk).split(/\n{2,}/).map(s => s.trim()).filter(Boolean);
+                    const joined = stripFences(chunk).split(/\n{2,}/).map((s) => s.trim()).filter(Boolean);
                     (joined.length ? joined : [stripFences(chunk)]).forEach((code, idx) => {
                         const payload = code.includes("assert") || code.includes("try:") ? code : stripFences(chunk);
                         if (!payload.trim()) return;
@@ -501,8 +438,8 @@ export default function CanvasCodeSynthesis() {
                     stream: {
                         ...(prev.stream || {}),
                         gen_tc: msg.gen_tc,
-                        gen_tc_raw: rawArr,                 // 원문 배열 보관
-                        gen_tc_raw_text: rawText || null,   // 🔹 하단 폴백용 문자열
+                        gen_tc_raw: rawArr,
+                        gen_tc_raw_text: rawText || null,
                     },
                 };
             });
@@ -512,7 +449,7 @@ export default function CanvasCodeSynthesis() {
         // --- CODE CANDIDATES ---
         if (Array.isArray(msg.code) || Array.isArray(msg.code_raw)) {
             const codes = Array.isArray(msg.code) ? msg.code : (msg.code_raw || []).map(stripFences);
-            setBundle(prev => {
+            setBundle((prev) => {
                 const baseMetrics = {
                     timeComplexityRank: 3,
                     timeComplexityLabel: "O(√n)",
@@ -541,7 +478,7 @@ export default function CanvasCodeSynthesis() {
 
         // --- EXEC DETAILS ---
         if (Array.isArray(msg.gen_tc_exec_code) || Array.isArray(msg.gen_tc_exec_result)) {
-            setBundle(prev => ({
+            setBundle((prev) => ({
                 ...prev,
                 stream: {
                     ...(prev.stream || {}),
@@ -554,7 +491,7 @@ export default function CanvasCodeSynthesis() {
 
         // --- PASS MATRIX ---
         if (Array.isArray(msg.gen_tc_passed)) {
-            setBundle(prev => {
+            setBundle((prev) => {
                 const passed = msg.gen_tc_passed; // [[bool]]
                 const mapping = {};
                 passed.forEach((row, i) => {
@@ -574,7 +511,6 @@ export default function CanvasCodeSynthesis() {
         }
     };
 
-
     const sortedCandidates = useMemo(() => {
         const trSource = bundle?.testResults || {};
         const decorated = (bundle?.candidates || []).map((c) => {
@@ -582,7 +518,7 @@ export default function CanvasCodeSynthesis() {
             const pass = tr.pass ?? 0;
             const total = tr.total ?? totalTests;
             const fail = tr.fail ?? Math.max(0, total - pass);
-            const score = pass; // 🔹 Score = 통과 개수
+            const score = pass;
             const { ok } = scoreCandidate(c, bundle.requirements);
             return { c, score, ok, pass, fail, total };
         });
@@ -594,17 +530,20 @@ export default function CanvasCodeSynthesis() {
             if (sortKey === "score") {
                 if (a.score !== b.score) return sortDir === "asc" ? a.score - b.score : b.score - a.score;
                 if (a.pass !== b.pass) return b.pass - a.pass;
-                const ar = a.c.metrics.timeComplexityRank, br = b.c.metrics.timeComplexityRank;
+                const ar = a.c.metrics.timeComplexityRank,
+                    br = b.c.metrics.timeComplexityRank;
                 if (ar !== br) return ar - br;
                 return 0;
             } else if (sortKey === "tests") {
                 if (a.pass !== b.pass) return sortDir === "asc" ? a.pass - b.pass : b.pass - a.pass;
                 if (a.fail !== b.fail) return a.fail - b.fail;
-                const ar = a.c.metrics.timeComplexityRank, br = b.c.metrics.timeComplexityRank;
+                const ar = a.c.metrics.timeComplexityRank,
+                    br = b.c.metrics.timeComplexityRank;
                 if (ar !== br) return ar - br;
                 return b.score - a.score;
             } else {
-                const ar = a.c.metrics.timeComplexityRank, br = b.c.metrics.timeComplexityRank;
+                const ar = a.c.metrics.timeComplexityRank,
+                    br = b.c.metrics.timeComplexityRank;
                 if (ar !== br) return sortDir === "asc" ? ar - br : br - ar;
                 if (a.score !== b.score) return b.score - a.score;
                 if (a.pass !== b.pass) return b.pass - a.pass;
@@ -642,13 +581,13 @@ export default function CanvasCodeSynthesis() {
         abortRef.current = controller;
 
         try {
-            console.log(import.meta.env.VITE_API_URL)
+            console.log(import.meta.env.VITE_API_URL);
             const res = await fetch(`${import.meta.env.VITE_API_URL}/generate`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
                 signal: controller.signal,
-                mode: "cors", // 필요 시 CORS 설정
+                mode: "cors",
             });
             if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
 
@@ -667,7 +606,6 @@ export default function CanvasCodeSynthesis() {
                     buffer = buffer.slice(idx + 1);
                     if (!line) continue;
 
-                    // (선택) 로그에 보관 — 최근 100줄
                     setLogLines((prev) => {
                         const next = [...prev, line];
                         if (next.length > 100) next.shift();
@@ -678,7 +616,7 @@ export default function CanvasCodeSynthesis() {
                         const msg = JSON.parse(line);
                         handleStreamMessage(msg);
                     } catch {
-                        // 부분 청크/불완전 라인 무시
+                        // ignore partial/incomplete lines
                     }
                 }
             }
@@ -691,7 +629,7 @@ export default function CanvasCodeSynthesis() {
             }
         } catch (e) {
             if (e.name === "AbortError") {
-                // 사용자가 중단
+                // user aborted
             } else {
                 setError(String(e?.message || e));
                 console.error("streamFromApi error", e);
@@ -708,30 +646,54 @@ export default function CanvasCodeSynthesis() {
         }
     }
 
+    function handleSaveApiKey() {
+        const k = (tmpApiKey || "").trim();
+        if (!k) return;
+        setApiKey(k);
+        try {
+            if (rememberKey) localStorage.setItem("archcode_api_key", k);
+            else localStorage.removeItem("archcode_api_key");
+        } catch {}
+        setShowApiKeyModal(false);
+        // optionally kick off generation after saving
+        streamFromApi();
+    }
+
+    function handleClearApiKey() {
+        setApiKey("");
+        try {
+            localStorage.removeItem("archcode_api_key");
+        } catch {}
+    }
+
     function handleGenerate() {
-        // 이제는 항상 서버 스트림을 사용
+        // Require API key for OpenAI runs
+        if (llm.platform === "openai" && !apiKey.trim()) {
+            setTmpApiKey("");
+            setShowApiKeyModal(true);
+            return;
+        }
         streamFromApi();
     }
 
     const _stripFencesLocal = (s) => {
         if (!s) return "";
         let t = String(s).trim();
-        // 앞/뒤 코드펜스 제거
         t = t.replace(/^```[a-zA-Z]*\s*/m, "");
         t = t.replace(/```$/m, "");
         return t.trim();
     };
 
-    const groupTestsByRequirement = (allTests, reqs) => {
-        const byReq = new Map((reqs || []).map(r => [r.id, { req: r, tests: [] }]));
-        (allTests || []).forEach(t => {
+    // Group tests by requirement, preserving req order
+    const groupTestsByRequirementOrdered = (allTests, reqs) => {
+        const byReq = new Map((reqs || []).map((r) => [r.id, { req: r, tests: [] }]));
+        (allTests || []).forEach((t) => {
             const links = Array.isArray(t.fromReqIds) ? t.fromReqIds : [];
-            links.forEach(rid => {
+            links.forEach((rid) => {
                 if (byReq.has(rid)) byReq.get(rid).tests.push(t);
             });
         });
-        // reqs에 정의된 순서를 유지
-        return (reqs || []).map(r => byReq.get(r.id) || { req: r, tests: [] });
+        return (reqs || []).map((r) => byReq.get(r.id) || { req: r, tests: [] });
     };
 
     const coverageBadge = (count) => {
@@ -741,44 +703,67 @@ export default function CanvasCodeSynthesis() {
     };
 
     const normalizeDisplayedTestCode = (code) => {
-        // UI 표기용 함수명 통일 (원본은 유지됨)
         return String(code || "")
             .replace(/\breturn_value_based_on_prime\b/g, "prime_or_not")
             .replace(/\bprime_check\b/g, "prime_or_not")
             .replace(/\bcheck_prime_return\b/g, "prime_or_not");
     };
 
-// gen_tc_raw 폴백 문자열
-    const rawGenTcText =
-        (bundle?.stream?.gen_tc_raw_text)
-            ? bundle.stream.gen_tc_raw_text
-            : Array.isArray(bundle?.stream?.gen_tc_raw) && bundle.stream.gen_tc_raw.length
-                ? _stripFencesLocal(bundle.stream.gen_tc_raw[0])
-                : "";
+    // gen_tc_raw 폴백 문자열
+    const rawGenTcText = bundle?.stream?.gen_tc_raw_text
+        ? bundle.stream.gen_tc_raw_text
+        : Array.isArray(bundle?.stream?.gen_tc_raw) && bundle.stream.gen_tc_raw.length
+            ? _stripFencesLocal(bundle.stream.gen_tc_raw[0])
+            : "";
 
-// 기능/비기능 그룹 미리 계산 (hasEmptyCategory 판별용)
-    const functionalGroups = groupTestsByRequirement(
+    // 기능/비기능 그룹 (hasEmptyCategory 판별용)
+    const functionalGroups = groupTestsByRequirementOrdered(
         bundle?.tests || [],
-        (bundle?.requirements || []).filter(r => r.kind === "functional")
+        (bundle?.requirements || []).filter((r) => r.kind === "functional")
     );
-    const nonfunctionalGroups = groupTestsByRequirement(
+    const nonfunctionalGroups = groupTestsByRequirementOrdered(
         bundle?.tests || [],
-        (bundle?.requirements || []).filter(r => r.kind === "nonfunctional")
+        (bundle?.requirements || []).filter((r) => r.kind === "nonfunctional")
     );
-    const hasEmptyCategory = [...functionalGroups, ...nonfunctionalGroups].some(g => (g.tests || []).length === 0);
-
-
-
+    const hasEmptyCategory = [...functionalGroups, ...nonfunctionalGroups].some((g) => (g.tests || []).length === 0);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 text-slate-900">
             <header className="sticky top-0 z-40 bg-white/70 backdrop-blur border-b">
                 <div className="max-w-6xl mx-auto px-4 h-12 flex items-center justify-between">
-                    <span className="text-slate-800 font-bold tracking-tight">
-                        <img src="/ldi-logo.svg" width={30} height={30} />
-                        ARCHCODE
-                    </span>
+          <span className="text-slate-800 font-bold tracking-tight flex items-center gap-2">
+            <img src="/ldi-logo.svg" width={30} height={30} alt="logo" />
+            ARCHCODE
+          </span>
                     <div className="flex items-center gap-2">
+                        {llm.platform === "openai" &&
+                            (apiKey ? (
+                                <span className="inline-flex items-center gap-1 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-full">
+                  <KeyRound className="h-3.5 w-3.5" />
+                  Key set
+                  <button
+                      onClick={() => {
+                          setTmpApiKey(apiKey);
+                          setShowApiKeyModal(true);
+                      }}
+                      className="underline ml-1"
+                  >
+                    manage
+                  </button>
+                </span>
+                            ) : (
+                                <button
+                                    onClick={() => {
+                                        setTmpApiKey("");
+                                        setShowApiKeyModal(true);
+                                    }}
+                                    className="inline-flex items-center gap-1 text-xs text-amber-700 bg-amber-50 border border-amber-200 px-2 py-1 rounded-full"
+                                    title="Set your OpenAI API key"
+                                >
+                                    <AlertCircle className="h-3.5 w-3.5" />
+                                    API key needed
+                                </button>
+                            ))}
                         {streaming ? (
                             <span className="inline-flex items-center gap-2 text-xs text-violet-700 bg-violet-50 border border-violet-200 px-2 py-1 rounded-full">
                 <span className="h-2 w-2 rounded-full bg-violet-500 animate-pulse" /> Streaming…
@@ -806,12 +791,17 @@ export default function CanvasCodeSynthesis() {
                                         value={sampleCount}
                                         onChange={(e) => setSampleCount(Math.max(1, parseInt(e.target.value) || 1))}
                                     >
-                                        {[1,2,3,4,5,6,7,8,9,10].map((n) => (
-                                            <option key={n} value={n}>{n}</option>
+                                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                                            <option key={n} value={n}>
+                                                {n}
+                                            </option>
                                         ))}
                                     </select>
                                 </label>
-                                <button onClick={() => setShowLlm((v) => !v)} className="inline-flex items-center gap-2 rounded-2xl border px-3 py-1.5 text-sm hover:bg-gray-50">
+                                <button
+                                    onClick={() => setShowLlm((v) => !v)}
+                                    className="inline-flex items-center gap-2 rounded-2xl border px-3 py-1.5 text-sm hover:bg-gray-50"
+                                >
                                     <Settings className="h-4 w-4" /> Params
                                 </button>
 
@@ -820,7 +810,10 @@ export default function CanvasCodeSynthesis() {
                                         <Brain className="h-4 w-4" /> Generate
                                     </button>
                                 ) : (
-                                    <button onClick={stopStreaming} className="inline-flex items-center gap-2 rounded-2xl border px-3 py-1.5 text-sm hover:bg-rose-50 border-rose-200 text-rose-700">
+                                    <button
+                                        onClick={stopStreaming}
+                                        className="inline-flex items-center gap-2 rounded-2xl border px-3 py-1.5 text-sm hover:bg-rose-50 border-rose-200 text-rose-700"
+                                    >
                                         <StopIcon className="h-4 w-4" /> Stop
                                     </button>
                                 )}
@@ -841,31 +834,21 @@ export default function CanvasCodeSynthesis() {
 
                         {showLlm && (
                             <div className="mt-3 rounded-xl border bg-white p-3 space-y-3">
-                                {/* API Key */}
-                                <div>
-                                    <label className="text-sm block mb-1 text-slate-600">API Key</label>
-                                    <input
-                                        type="password"
-                                        placeholder="Enter your API key"
-                                        className="w-full border rounded-md px-2 py-1"
-                                        value={apiKey}
-                                        onChange={(e) => setApiKey(e.target.value)}
-                                    />
-                                </div>
-
                                 {/* Platform → Model → Decoding */}
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                                     <label className="text-sm">
                                         <span className="block text-slate-600 mb-1">Platform</span>
-                                        <select
-                                            className="w-full border rounded-md px-2 py-1"
-                                            value={llm.platform}
-                                            onChange={(e) => setLlm(prev => ({ ...prev, platform: e.target.value }))}
-                                        >
+                                        <select className="w-full border rounded-md px-2 py-1" value={llm.platform} onChange={(e) => setLlm((prev) => ({ ...prev, platform: e.target.value }))}>
                                             <option value="openai">openai</option>
-                                            <option disabled value="azure">azure</option>
-                                            <option disabled value="anthropic">anthropic</option>
-                                            <option disabled value="other">other</option>
+                                            <option disabled value="azure">
+                                                azure
+                                            </option>
+                                            <option disabled value="anthropic">
+                                                anthropic
+                                            </option>
+                                            <option disabled value="other">
+                                                other
+                                            </option>
                                         </select>
                                     </label>
                                     <label className="text-sm">
@@ -873,16 +856,12 @@ export default function CanvasCodeSynthesis() {
                                         <input
                                             className="w-full border rounded-md px-2 py-1"
                                             value={llm.model_name}
-                                            onChange={(e) => setLlm(prev => ({ ...prev, model_name: e.target.value }))}
+                                            onChange={(e) => setLlm((prev) => ({ ...prev, model_name: e.target.value }))}
                                         />
                                     </label>
                                     <label className="text-sm">
                                         <span className="block text-slate-600 mb-1">Decoding</span>
-                                        <select
-                                            className="w-full border rounded-md px-2 py-1"
-                                            value={llm.strategy}
-                                            onChange={(e) => setLlm(prev => ({ ...prev, strategy: e.target.value }))}
-                                        >
+                                        <select className="w-full border rounded-md px-2 py-1" value={llm.strategy} onChange={(e) => setLlm((prev) => ({ ...prev, strategy: e.target.value }))}>
                                             <option value="greedy">greedy</option>
                                             <option value="nucleus">nucleus</option>
                                         </select>
@@ -897,28 +876,45 @@ export default function CanvasCodeSynthesis() {
                                             <label className="text-xs">
                                                 <span className="block mb-1">Temp</span>
                                                 <input
-                                                    type="number" step="0.01" min="0" max="2"
+                                                    type="number"
+                                                    step="0.01"
+                                                    min="0"
+                                                    max="2"
                                                     className="w-full border rounded-md px-2 py-1"
                                                     value={llm.kwargs.temperature}
-                                                    onChange={(e) => { const v = parseFloat(e.target.value); if (!Number.isNaN(v)) setLlm(p => ({ ...p, kwargs: { ...p.kwargs, temperature: v } })); }}
+                                                    onChange={(e) => {
+                                                        const v = parseFloat(e.target.value);
+                                                        if (!Number.isNaN(v)) setLlm((p) => ({ ...p, kwargs: { ...p.kwargs, temperature: v } }));
+                                                    }}
                                                 />
                                             </label>
                                             <label className="text-xs">
                                                 <span className="block mb-1">Top_p</span>
                                                 <input
-                                                    type="number" step="0.01" min="0" max="1"
+                                                    type="number"
+                                                    step="0.01"
+                                                    min="0"
+                                                    max="1"
                                                     className="w-full border rounded-md px-2 py-1"
                                                     value={llm.kwargs.top_p}
-                                                    onChange={(e) => { const v = parseFloat(e.target.value); if (!Number.isNaN(v)) setLlm(p => ({ ...p, kwargs: { ...p.kwargs, top_p: v } })); }}
+                                                    onChange={(e) => {
+                                                        const v = parseFloat(e.target.value);
+                                                        if (!Number.isNaN(v)) setLlm((p) => ({ ...p, kwargs: { ...p.kwargs, top_p: v } }));
+                                                    }}
                                                 />
                                             </label>
                                             <label className="text-xs">
                                                 <span className="block mb-1">Max tok</span>
                                                 <input
-                                                    type="number" step="1" min="1"
+                                                    type="number"
+                                                    step="1"
+                                                    min="1"
                                                     className="w-full border rounded-md px-2 py-1"
                                                     value={llm.kwargs.max_tokens}
-                                                    onChange={(e) => { const v = parseInt(e.target.value) || 0; if (v > 0) setLlm(p => ({ ...p, kwargs: { ...p.kwargs, max_tokens: v } })); }}
+                                                    onChange={(e) => {
+                                                        const v = parseInt(e.target.value) || 0;
+                                                        if (v > 0) setLlm((p) => ({ ...p, kwargs: { ...p.kwargs, max_tokens: v } }));
+                                                    }}
                                                 />
                                             </label>
                                         </div>
@@ -928,20 +924,15 @@ export default function CanvasCodeSynthesis() {
                         )}
 
                         {error && (
-                            <div className="mt-3 text-sm text-rose-700 bg-rose-50 border border-rose-200 rounded-xl p-2">
-                                Error: {error}
-                            </div>
+                            <div className="mt-3 text-sm text-rose-700 bg-rose-50 border border-rose-200 rounded-xl p-2">Error: {error}</div>
                         )}
                         {!!logLines.length && (
                             <details className="mt-3">
                                 <summary className="text-sm text-slate-600 cursor-pointer">Stream log (last {logLines.length} lines)</summary>
-                                <pre className="mt-2 text-xs bg-slate-50 border rounded-lg p-2 max-h-40 overflow-auto">
-{logLines.join("\n")}
-                </pre>
+                                <pre className="mt-2 text-xs bg-slate-50 border rounded-lg p-2 max-h-40 overflow-auto">{logLines.join("\n")}</pre>
                             </details>
                         )}
                     </CardBox>
-
 
                     {/* 2) Tests & Coverage */}
                     <CardBox icon={<Beaker className="h-5 w-5" />} title="2) Tests & Coverage (by Requirement)">
@@ -971,12 +962,16 @@ export default function CanvasCodeSynthesis() {
                                                             <div className="font-medium">{req.title}</div>
                                                             {Array.isArray(req.details) && req.details.length > 0 && (
                                                                 <ul className="list-disc pl-5 text-sm text-slate-600 mt-1">
-                                                                    {req.details.map((d, i) => (<li key={i}>{d}</li>))}
+                                                                    {req.details.map((d, i) => (
+                                                                        <li key={i}>{d}</li>
+                                                                    ))}
                                                                 </ul>
                                                             )}
                                                         </div>
                                                     </div>
-                                                    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${cov.className}`}>{cov.text}</span>
+                                                    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${cov.className}`}>
+                            {cov.text}
+                          </span>
                                                 </div>
 
                                                 <div className="mt-3 space-y-2">
@@ -995,7 +990,7 @@ export default function CanvasCodeSynthesis() {
                                         );
                                     })}
 
-                                    {(bundle?.requirements || []).some(r => r.kind === "functional") ? null : (
+                                    {(bundle?.requirements || []).some((r) => r.kind === "functional") ? null : (
                                         <div className="text-sm text-slate-500 italic">No functional requirements parsed yet.</div>
                                     )}
                                 </div>
@@ -1017,12 +1012,16 @@ export default function CanvasCodeSynthesis() {
                                                             <div className="font-medium">{req.title}</div>
                                                             {Array.isArray(req.details) && req.details.length > 0 && (
                                                                 <ul className="list-disc pl-5 text-sm text-slate-600 mt-1">
-                                                                    {req.details.map((d, i) => (<li key={i}>{d}</li>))}
+                                                                    {req.details.map((d, i) => (
+                                                                        <li key={i}>{d}</li>
+                                                                    ))}
                                                                 </ul>
                                                             )}
                                                         </div>
                                                     </div>
-                                                    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${cov.className}`}>{cov.text}</span>
+                                                    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${cov.className}`}>
+                            {cov.text}
+                          </span>
                                                 </div>
 
                                                 <div className="mt-3 space-y-2">
@@ -1041,7 +1040,7 @@ export default function CanvasCodeSynthesis() {
                                         );
                                     })}
 
-                                    {(bundle?.requirements || []).some(r => r.kind === "nonfunctional") ? null : (
+                                    {(bundle?.requirements || []).some((r) => r.kind === "nonfunctional") ? null : (
                                         <div className="text-sm text-slate-500 italic">No non-functional requirements parsed yet.</div>
                                     )}
                                 </div>
@@ -1051,9 +1050,7 @@ export default function CanvasCodeSynthesis() {
                         {/* 🔻 폴백: 카테고리 중 하나라도 테스트가 없으면 gen_tc_raw 를 코드블록으로 하단에 출력 */}
                         {hasEmptyCategory && rawGenTcText ? (
                             <div className="mt-4">
-                                <div className="text-xs uppercase tracking-wider text-slate-500 mb-1">
-                                    Fallback: Raw generated tests
-                                </div>
+                                <div className="text-xs uppercase tracking-wider text-slate-500 mb-1">Fallback: Raw generated tests</div>
                                 <MonoBlock code={rawGenTcText} />
                             </div>
                         ) : null}
@@ -1071,10 +1068,7 @@ export default function CanvasCodeSynthesis() {
                             <div className="text-sm text-slate-500 italic">No plan received yet.</div>
                         )}
                     </CardBox>
-
                 </div>
-
-
 
                 {/* RIGHT COLUMN */}
                 <div className="space-y-6">
@@ -1085,21 +1079,12 @@ export default function CanvasCodeSynthesis() {
                         right={
                             <div className="flex items-center gap-3 text-sm">
                                 <label className="inline-flex items-center gap-1">
-                                    <input
-                                        type="checkbox"
-                                        className="h-4 w-4"
-                                        checked={filterFrMeets}
-                                        onChange={(e) => setFilterFrMeets(e.target.checked)}
-                                    />
+                                    <input type="checkbox" className="h-4 w-4" checked={filterFrMeets} onChange={(e) => setFilterFrMeets(e.target.checked)} />
                                     <span>FR meets only</span>
                                 </label>
                                 <div className="inline-flex items-center gap-1">
                                     <span>Sort</span>
-                                    <select
-                                        className="border rounded-md px-2 py-1"
-                                        value={sortKey}
-                                        onChange={(e) => setSortKey(e.target.value)}
-                                    >
+                                    <select className="border rounded-md px-2 py-1" value={sortKey} onChange={(e) => setSortKey(e.target.value)}>
                                         <option value="score">Score</option>
                                         <option value="tests">Tests</option>
                                         <option value="complexity">Complexity</option>
@@ -1118,28 +1103,28 @@ export default function CanvasCodeSynthesis() {
                         <div className="max-h-[60vh] overflow-y-auto pr-1">
                             <div className="flex flex-col gap-3">
                                 {sortedCandidates.length === 0 ? (
-                                    <div className="text-sm text-slate-500 italic px-1">
-                                        No candidates yet — start a stream to see generated code.
-                                    </div>
+                                    <div className="text-sm text-slate-500 italic px-1">No candidates yet — start a stream to see generated code.</div>
                                 ) : null}
 
                                 {sortedCandidates.map((d) => {
                                     const c = d.c;
                                     const selectedStyle = selected?.id === c.id ? "ring-2 ring-violet-300 border-violet-300" : "hover:bg-gray-50";
-                                    const tagBadges = [
-                                        `Lang: ${(c.language || "").toUpperCase()}`,
-                                        `Complexity: ${c.metrics.timeComplexityLabel}`,
-                                        `CC: ${c.metrics.cyclomaticComplexity}`,
-                                        c.metrics.robustInputChecks ? "Robust" : "No checks",
-                                        c.metrics.handlesNegativesAndZero ? "Edge-safe" : "Edge-unsafe",
-                                    ];
+                                    // const tagBadges = [
+                                    //   `Lang: ${(c.language || "").toUpperCase()}`,
+                                    //   `Complexity: ${c.metrics.timeComplexityLabel}`,
+                                    //   `CC: ${c.metrics.cyclomaticComplexity}`,
+                                    //   c.metrics.robustInputChecks ? "Robust" : "No checks",
+                                    //   c.metrics.handlesNegativesAndZero ? "Edge-safe" : "Edge-unsafe",
+                                    // ];
                                     return (
                                         <div
                                             key={c.id}
                                             role="button"
                                             tabIndex={0}
                                             onClick={() => setSelectedId(c.id)}
-                                            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setSelectedId(c.id); }}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter" || e.key === " ") setSelectedId(c.id);
+                                            }}
                                             className={`rounded-2xl border p-3 bg-white cursor-pointer w-full ${selectedStyle}`}
                                         >
                                             <div className="flex items-start justify-between">
@@ -1148,20 +1133,15 @@ export default function CanvasCodeSynthesis() {
                                                     <div className="text-xs text-slate-500 mt-0.5">{c.origin === "archcode" ? "ARCHCODE" : "Existing"}</div>
                                                 </div>
                                                 <div className="text-right text-xs">
-                                                    <div>Score: <span className="font-semibold">{d.score}</span></div>
-                                                    <div>Tests: <span
-                                                        className="font-semibold">{d.pass}/{d.total}</span></div>
+                                                    <div>
+                                                        Score: <span className="font-semibold">{d.score}</span>
+                                                    </div>
+                                                    <div>
+                                                        Tests: <span className="font-semibold">{d.pass}/{d.total}</span>
+                                                    </div>
                                                     <div className={d.ok ? "text-emerald-600" : "text-amber-600"}>{d.ok ? "FR meets" : "FR may violate"}</div>
                                                 </div>
                                             </div>
-
-                                            {/*<div className="mt-2 flex flex-wrap gap-1">*/}
-                                            {/*    {tagBadges.map((t, i) => (*/}
-                                            {/*        <Badge key={i} className="bg-slate-50 border-slate-200">*/}
-                                            {/*            {t}*/}
-                                            {/*        </Badge>*/}
-                                            {/*    ))}*/}
-                                            {/*</div>*/}
                                         </div>
                                     );
                                 })}
@@ -1199,20 +1179,75 @@ export default function CanvasCodeSynthesis() {
                                         }}
                                     />
                                 </div>
-                                {/*<div className="grid grid-cols-2 gap-2">*/}
-                                {/*    <div className="rounded-xl border p-3"><div className="text-xs text-slate-500">Complexity</div><div className="font-medium">{selected.metrics.timeComplexityLabel}</div></div>*/}
-                                {/*    <div className="rounded-xl border p-3"><div className="text-xs text-slate-500">Cyclomatic</div><div className="font-medium">{selected.metrics.cyclomaticComplexity}</div></div>*/}
-                                {/*    <div className="rounded-xl border p-3"><div className="text-xs text-slate-500">Robust</div><div className="font-medium">{selected.metrics.robustInputChecks ? "Yes" : "No"}</div></div>*/}
-                                {/*    <div className="rounded-xl border p-3"><div className="text-xs text-slate-500">Edge-safe</div><div className="font-medium">{selected.metrics.handlesNegativesAndZero ? "Yes" : "No"}</div></div>*/}
-                                {/*</div>*/}
-                                {/*<div className="inline-flex items-center gap-2 text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-3 py-1 text-sm">*/}
-                                {/*    Manually selected*/}
-                                {/*</div>*/}
                             </div>
                         )}
                     </CardBox>
                 </div>
             </div>
+
+            {/* API Key Modal */}
+            {showApiKeyModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/40" onClick={() => setShowApiKeyModal(false)} />
+                    <div role="dialog" aria-modal="true" className="relative z-10 w-[92vw] max-w-md rounded-2xl border bg-white p-5 shadow-xl">
+                        <div className="flex items-center gap-2 mb-3">
+                            <KeyRound className="h-5 w-5 text-slate-700" />
+                            <h3 className="font-semibold tracking-tight">Set LLM API key</h3>
+                        </div>
+                        <p className="text-sm text-slate-600 mb-3">
+                            You’re using the <span className="font-mono">openai</span> platform. Provide your API key to call the model from this app.
+                        </p>
+
+                        <label className="block text-sm mb-1 text-slate-700">OpenAI API key</label>
+                        <input
+                            type="password"
+                            className="w-full border rounded-lg px-3 py-2 mb-3 bg-white"
+                            placeholder="sk-..."
+                            value={tmpApiKey}
+                            onChange={(e) => setTmpApiKey(e.target.value)}
+                            autoFocus
+                        />
+
+                        <label className="inline-flex items-center gap-2 text-sm mb-4">
+                            <input type="checkbox" className="h-4 w-4" checked={rememberKey} onChange={(e) => setRememberKey(e.target.checked)} />
+                            <span>Remember on this device (localStorage)</span>
+                        </label>
+
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                {apiKey && (
+                                    <button
+                                        onClick={handleClearApiKey}
+                                        className="inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-sm hover:bg-gray-50"
+                                        title="Clear saved key"
+                                    >
+                                        Clear
+                                    </button>
+                                )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => setShowApiKeyModal(false)}
+                                    className="inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-sm hover:bg-gray-50"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleSaveApiKey}
+                                    className="inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-sm bg-slate-900 text-white hover:opacity-90"
+                                    disabled={!tmpApiKey.trim()}
+                                >
+                                    Save & Continue
+                                </button>
+                            </div>
+                        </div>
+
+                        <p className="mt-3 text-xs text-slate-500">
+                            Key is stored only on this device if you choose to remember it. It’s sent to your backend with the request payload you already defined.
+                        </p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
