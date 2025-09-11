@@ -1,0 +1,28 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes an integer `n` as input.
+- It returns an integer.
+
+## Expected Behavior
+- The function should calculate and return the special factorial of `n`.
+
+## Edge Cases
+- Handle the case where `n` is 0 or 1, returning 1.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the value of `n`.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-integer input for `n` or a negative `n`.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.

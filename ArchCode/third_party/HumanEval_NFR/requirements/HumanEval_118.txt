@@ -1,0 +1,37 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a string `word` as input.
+- It returns a string.
+
+## Expected Behavior
+- The function should find the closest vowel that stands between two consonants from the right side of the word.
+- It should not consider vowels at the beginning or ending of the word.
+- If no vowel satisfies the above condition, the function should return an empty string.
+
+## Edge Cases
+- Handle an empty `word` string, returning an empty string.
+- Handle the case where no vowel satisfies the condition, returning an empty string.
+- Handle words with only one vowel or one consonant, returning an empty string.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the `word` string.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely long words, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-string input.
+- Handle words with non-English letters.
+- Handle words with both uppercase and lowercase letters.
+
+### Reliability
+- Avoid index errors while accessing word characters.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

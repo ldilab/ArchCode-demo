@@ -1,0 +1,31 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and any other possible errors.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a string `message` as input.
+- It returns a string.
+
+## Expected Behavior
+- The function should encode the input message by swapping the case of all letters and replacing all vowels with the letter that appears 2 places ahead of that vowel in the English alphabet.
+
+## Edge Cases
+- Handle an empty `message` input, returning an empty string.
+- Handle non-string input, returning an empty string.
+- Handle a message with no vowels, returning the same message with case-swapped letters.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the `message`.
+- Space complexity: O(n) where n is the length of the `message`.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-string input or a message containing non-letter characters.
+- Handle case where the encoded message contains non-letter characters.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

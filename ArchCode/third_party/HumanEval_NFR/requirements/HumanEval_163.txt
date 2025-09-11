@@ -1,0 +1,34 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes two positive integers `a` and `b` as input.
+- It returns a list of integers.
+
+## Expected Behavior
+- The function should return a list of all even digits between `a` and `b`, inclusive, in ascending order.
+
+## Edge Cases
+- Handle the case where `a` is greater than `b`, swapping their values and still returning the result in ascending order.
+- Handle the case where there are no even digits between `a` and `b`, returning an empty list.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(nm) where n is the number of digits in `a` and m is the number of digits in `b`.
+- Space complexity: O(m) where m is the number of digits in `b`.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-positive integer input for `a` or `b`.
+- Handle non-integer input for `a` or `b`.
+
+### Reliability
+- Ensure the function works correctly for all valid input combinations of `a` and `b`.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.
+- Follow coding conventions and naming conventions.

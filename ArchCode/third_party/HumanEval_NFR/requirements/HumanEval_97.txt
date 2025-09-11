@@ -1,0 +1,32 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes two integers `a` and `b` as input.
+- It returns an integer as output.
+
+## Expected Behavior
+- The function should return the product of the unit digits of `a` and `b`.
+
+## Edge Cases
+- Handle non-integer `a` and `b` inputs.
+- Handle large integers `a` and `b` that may cause arithmetic overflow.
+- Handle negative integers `a` and `b`.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(1).
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 1 second.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-integer inputs for `a` and `b`.
+- Handle arithmetic overflow.
+- Handle negative integers `a` and `b`.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.

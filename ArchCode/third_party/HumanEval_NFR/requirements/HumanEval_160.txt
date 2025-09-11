@@ -1,0 +1,45 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes two lists as input: `operator` and `operand`.
+- `operator` is a list of basic algebra operations.
+- `operand` is a list of non-negative integers.
+- The function returns the evaluation of the algebraic expression built using the `operator` and `operand` lists.
+
+## Expected Behavior
+- The function should build an algebraic expression using the `operator` and `operand` lists.
+- It should evaluate the expression and return the result.
+
+## Constraints
+- The length of the `operator` list is equal to the length of the `operand` list minus one.
+- The `operand` list has at least two operands.
+- The `operator` list has at least one operator.
+
+## Edge Cases
+- Handle empty lists for `operator` and `operand`, returning None.
+- Handle non-list inputs for `operator` and `operand`, returning None.
+- Handle non-string elements in `operator` list, returning None.
+- Handle non-integer elements in `operand` list, returning None.
+- Handle division by zero in the expression, returning None.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the `operand` list.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list `operator` or `operand` inputs.
+- Handle non-string elements in the `operator` list or non-integer elements in the `operand` list.
+- Handle division by zero in the expression.
+
+### Reliability
+- Avoid index errors while accessing elements in the `operator` and `operand` lists.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

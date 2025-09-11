@@ -1,0 +1,35 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes an integer `n` as input.
+- It returns a list of integers.
+
+## Expected Behavior
+- The function should return the list of prime factors of the input number `n` in ascending order.
+- Each prime factor should appear in the list as many times as it is a factor of `n`.
+- The product of all the factors in the list should be equal to `n`.
+
+## Edge Cases
+- Handle the case where `n` is less than or equal to 1, returning an empty list.
+- Handle the case where `n` is a prime number, returning a list with a single element equal to `n`.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(sqrt(n)) where n is the input number.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-integer `n` input.
+- Handle negative `n` input.
+
+### Reliability
+- Avoid arithmetic errors, such as division by zero or integer overflow.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

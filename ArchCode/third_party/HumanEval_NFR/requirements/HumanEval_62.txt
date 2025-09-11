@@ -1,0 +1,34 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a list of integers `xs` as input.
+- It returns a list of integers.
+
+## Expected Behavior
+- The function should return the derivative of the polynomial represented by the input list of coefficients `xs`.
+- The derivative of a polynomial can be computed by taking the derivative of each term and decreasing the exponent by 1.
+- The input `xs` list represents the coefficients of the polynomial in increasing order of exponents.
+
+## Edge Cases
+- Handle an empty `xs` list, returning an empty list.
+- Handle a single-element `xs` list, returning a list with a single element equal to 0.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the `xs` list.
+- Space complexity: O(n) where n is the length of the `xs` list.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list `xs` input or non-integer elements in the `xs` list.
+
+### Reliability
+- Avoid index errors while accessing `xs` elements.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

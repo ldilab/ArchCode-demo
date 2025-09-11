@@ -1,0 +1,33 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a positive integer `n` as input.
+- It returns a list of integers.
+
+## Expected Behavior
+- The function should return a sorted list that contains the odd numbers in the Collatz sequence for the given input `n`.
+
+## Edge Cases
+- Handle non-positive integer `n`, returning an empty list.
+- Handle the case where `n` is already 1, returning a list containing only 1.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(log n) where n is the value of `n`.
+- Space complexity: O(log n) to store the Collatz sequence.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-integer input for `n`.
+- Handle non-integer elements in the Collatz sequence.
+
+### Reliability
+- Avoid infinite loops by following the Collatz sequence rules correctly.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.

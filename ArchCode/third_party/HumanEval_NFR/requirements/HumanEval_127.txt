@@ -1,0 +1,34 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes two tuples `interval1` and `interval2`, representing intervals, as input.
+- Each tuple has two integers representing the start and end values of the interval.
+- The function returns a string.
+
+## Expected Behavior
+- The function should determine whether the length of the intersection between `interval1` and `interval2` is a prime number.
+- If the length of the intersection is a prime number, the function should return "YES".
+- If the two intervals don't intersect or the length is not a prime number, the function should return "NO".
+
+## Edge Cases
+- Handle non-tuple input for `interval1` or `interval2`, returning "NO".
+- Handle non-integer elements in the `interval1` or `interval2` tuples, returning "NO".
+- Handle cases where the start value of an interval is greater than the end value, returning "NO".
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the difference between the end and start values of the intersection.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-tuple input or non-integer elements in the tuples, returning "NO".
+- Handle cases where the start value is greater than the end value, returning "NO".
+
+### Reliability
+- Avoid index errors while accessing elements of the tuples.

@@ -1,0 +1,34 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a list `l` as input.
+- It returns a list of integers.
+
+## Expected Behavior
+- The function should return a new list `l'` such that `l'` is identical to `l` at the indices that are not divisible by three, while its values at the indices that are divisible by three are equal to the values of the corresponding indices of `l`, but sorted.
+
+## Edge Cases
+- Handle an empty `l` list, returning an empty list.
+- Handle the case where all indices in `l` are divisible by three, returning `l` sorted.
+- Handle the case where no indices in `l` are divisible by three, returning `l` unchanged.
+- Handle non-integer elements in `l`.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n log n) where n is the length of the input list `l`.
+- Space complexity: O(n) to store the sorted values.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list input or a non-integer element in the `l` list.
+
+### Reliability
+- Avoid index errors while accessing `l` elements.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

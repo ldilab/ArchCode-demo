@@ -1,0 +1,30 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a list of strings `strings` and a substring `substring` as input.
+- It returns a list of strings.
+
+## Expected Behavior
+- The function should return a list of strings from `strings` that contain the given `substring`.
+
+## Edge Cases
+- Handle an empty `strings` list, returning an empty list.
+- Handle the case where no string in `strings` contains the `substring`, returning an empty list.
+- Handle multiple strings containing the `substring` with the same frequency, returning any of them.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n*m) where n is the length of the `strings` list and m is the length of the longest string in `strings`.
+- Space complexity: O(k) where k is the number of strings containing the `substring`.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list `strings` input or a non-string `substring`.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

@@ -1,0 +1,31 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a string as input.
+- It returns a boolean value.
+
+## Expected Behavior
+- The function should return True if there is a valid subsequence of brackets where at least one bracket in the subsequence is nested.
+- A valid subsequence of brackets is defined as a sequence of opening and closing brackets that can be nested within each other in a valid manner.
+- The function should return False if there is no valid subsequence of brackets where at least one bracket is nested.
+
+## Edge Cases
+- Handle an empty string input, returning False.
+- Handle a string input that contains characters other than square brackets, returning False.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the input string.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large input strings, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-string input.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

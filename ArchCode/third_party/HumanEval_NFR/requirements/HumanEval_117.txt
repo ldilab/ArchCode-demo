@@ -1,0 +1,38 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a string `s` and a natural number `n` as input.
+- It returns a list of strings.
+
+## Expected Behavior
+- The function should return a list of all words from `s` that contain exactly `n` consonants, in the order they appear in `s`.
+- If `s` is empty, the function should return an empty list.
+- The input string `s` only contains letters and spaces.
+
+## Edge Cases
+- Handle an empty `s`, returning an empty list.
+- Handle the case where no words in `s` contain exactly `n` consonants, returning an empty list.
+- Handle multiple words that contain exactly `n` consonants, returning them in the order they appear in `s`.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(m), where m is the total number of characters in `s`.
+- Space complexity: O(p), where p is the number of words in `s` that contain exactly `n` consonants.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-string `s` input or a non-integer `n`.
+- Handle non-letter characters in `s`.
+- Handle negative `n` values or zero `n`.
+
+### Reliability
+- Ensure the function handles edge cases correctly.
+- Avoid index errors while accessing elements in `s` or the result list.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

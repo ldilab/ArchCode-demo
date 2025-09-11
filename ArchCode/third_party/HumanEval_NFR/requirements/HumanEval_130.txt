@@ -1,0 +1,30 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a non-negative integer `n` as input.
+- It returns a list of integers.
+
+## Expected Behavior
+- The function should return a list of the first `n + 1` numbers of the Tribonacci sequence.
+
+## Edge Cases
+- Handle the case where `n` is 0, returning an empty list.
+- Handle the case where `n` is 1, returning `[1]`.
+- Handle the case where `n` is 2, returning `[1, 3]`.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the value of `n`.
+- Space complexity: O(n) where n is the value of `n`.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-integer `n` input or negative `n`.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

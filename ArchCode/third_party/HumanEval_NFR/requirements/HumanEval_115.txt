@@ -1,0 +1,35 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a rectangular grid of wells as a list of lists `grid` and a bucket capacity integer `capacity` as input.
+- It returns an integer representing the number of times the buckets need to be lowered.
+
+## Expected Behavior
+- The function should calculate the number of times the buckets need to be lowered in order to empty all the wells in the grid.
+- The bucket capacity determines how many units of water can be extracted in a single lowering.
+
+## Edge Cases
+- Handle an empty `grid` list, returning 0.
+- Handle the case where all wells are already empty, returning 0.
+- Handle the case where the bucket capacity is greater than the total number of units of water in the grid, returning the minimum number of times the buckets need to be lowered to empty all the wells.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n), where n is the total number of elements in the grid.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list `grid` input or a non-integer `capacity`.
+- Handle non-integer elements in the `grid` list or a negative `capacity`.
+
+### Reliability
+- Avoid index errors while accessing `grid` elements.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

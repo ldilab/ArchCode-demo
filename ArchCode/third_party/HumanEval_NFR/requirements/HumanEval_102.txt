@@ -1,0 +1,35 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, arithmetic operation errors, and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes two positive integers `x` and `y` as input.
+- It returns an integer.
+
+## Expected Behavior
+- The function should return the biggest even integer number that is in the range `[x, y]` inclusive.
+- If there is no such number, the function should return -1.
+
+## Edge Cases
+- Handle the case where `x` is greater than `y`, returning -1.
+- Handle the case where there are no even numbers in the range `[x, y]`, returning -1.
+- Handle the case where `x` and `y` are both odd numbers, returning -1.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the number of integers in the range `[x, y]`.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-positive integer inputs for `x` and `y`.
+- Handle non-integer inputs for `x` and `y`.
+
+### Reliability
+- Ensure the function returns the correct output for all valid inputs.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.

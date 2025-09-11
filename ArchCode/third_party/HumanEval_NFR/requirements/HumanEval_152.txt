@@ -1,0 +1,36 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes two lists of integers `game` and `guess` as input.
+- Both `game` and `guess` should have the same length.
+- The function returns a list of integers.
+
+## Expected Behavior
+- The function should compare the guesses with the scores and return a list of the same length, denoting how far off each guess was.
+- If a guess is correct, the corresponding value in the returned list should be 0.
+- If a guess is incorrect, the corresponding value in the returned list should be the absolute difference between the guess and the score.
+
+## Edge Cases
+- Handle empty `game` and `guess` lists, returning empty lists.
+- Handle non-list inputs for `game` and `guess`, returning None.
+- Handle different lengths of `game` and `guess`, raising an error or returning None.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the `game` or `guess` lists.
+- Space complexity: O(n) where n is the length of the `game` or `guess` lists.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list inputs or non-integer elements in the `game` and `guess` lists.
+
+### Reliability
+- Avoid index errors while accessing the `game` and `guess` lists.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

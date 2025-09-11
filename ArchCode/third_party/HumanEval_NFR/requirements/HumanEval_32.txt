@@ -1,0 +1,40 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The `poly` function takes a list `xs` of coefficients and a float `x` as input.
+- The `find_zero` function takes a list `xs` of coefficients as input.
+- Both functions return a float.
+
+## Expected Behavior
+- The `poly` function should evaluate the polynomial with coefficients `xs` at the point `x` and return the result.
+- The `find_zero` function should find a zero point of the polynomial defined by `xs` and return that point.
+- If there are multiple zero points, the function should return only one of them.
+- The `find_zero` function should only accept a list `xs` with an even number of coefficients and the largest non-zero coefficient as it guarantees a solution.
+
+## Edge Cases
+- Handle an empty `xs` list, returning an error message or raising an exception.
+- Handle a non-list `xs` input, returning an error message or raising an exception.
+- Handle a non-float `x` input in the `poly` function, returning an error message or raising an exception.
+- Handle a non-integer or non-float coefficient in the `xs` list, returning an error message or raising an exception.
+- Handle a `xs` list with an odd number of coefficients in the `find_zero` function, returning an error message or raising an exception.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) for both functions, where n is the length of the `xs` list.
+- Space complexity: O(1) for both functions.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle invalid input gracefully, providing clear error messages or raising appropriate exceptions.
+- Ensure the absence of division by zero errors or other arithmetic operation errors.
+
+### Reliability
+- Avoid index errors while accessing elements in the `xs` list.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

@@ -1,0 +1,38 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding index errors and handling invalid input.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a string `s` as input.
+- It returns a list of strings.
+
+## Expected Behavior
+- The function should split the input string into words, using commas and spaces as separators.
+- It should return an array of the resulting words.
+
+## Edge Cases
+- Handle an empty string input, returning an empty list.
+- Handle the case where `s` contains only commas and/or spaces, returning an empty list.
+- Handle the case where `s` contains consecutive commas and/or spaces, returning an empty list.
+- Handle the case where `s` contains only one word, returning a list with that word.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the input string `s`.
+- Space complexity: O(n) where n is the length of the input string `s`.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-string input.
+- Handle invalid characters in the input string, such as special characters or numbers mixed with words.
+- Handle leading and trailing spaces in the input string.
+- Handle spaces or commas as the first or last character in the input string.
+
+### Reliability
+- Ensure the function correctly splits the input string into words, regardless of the number and type of separators.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.

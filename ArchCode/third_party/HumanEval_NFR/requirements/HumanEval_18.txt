@@ -1,0 +1,33 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes two strings `string` and `substring` as input.
+- It returns an integer.
+
+## Expected Behavior
+- The function should count the number of times the given `substring` can be found in the `string`, considering overlapping cases.
+
+## Edge Cases
+- Handle empty `string` and `substring` inputs, returning 0.
+- Handle the case where `substring` is longer than `string`, returning 0.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n * m), where n is the length of the `string` and m is the length of the `substring`.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-string `string` or `substring` inputs.
+
+### Reliability
+- Avoid index errors while accessing characters in `string` and `substring`.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.
+- Code should be concise and avoid unnecessary computations.

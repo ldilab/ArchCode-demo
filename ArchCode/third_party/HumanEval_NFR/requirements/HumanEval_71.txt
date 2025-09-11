@@ -1,0 +1,38 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, arithmetic operation errors (e.g., division by zero), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes three integers `a`, `b`, and `c` representing the lengths of the sides of a triangle as input.
+- It returns a float representing the area of the triangle rounded to 2 decimal points if the sides form a valid triangle.
+- If the sides do not form a valid triangle, the function should return -1.
+
+## Expected Behavior
+- The function should return the area of the triangle if the given sides form a valid triangle.
+- The function should return -1 if the given sides do not form a valid triangle.
+
+## Edge Cases
+- Handle non-integer inputs, returning -1.
+- Handle negative side lengths, returning -1.
+- Handle side lengths of zero, returning -1.
+- Handle the case where the sum of any two sides is equal to the third side, returning -1.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(1).
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 1 second.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-integer inputs or negative side lengths.
+- Handle side lengths of zero.
+- Handle the case where the sum of any two sides is equal to the third side.
+
+### Reliability
+- Ensure error-free execution and avoid arithmetic operation errors.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.

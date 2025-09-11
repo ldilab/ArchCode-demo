@@ -1,0 +1,28 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes two parameters: `a`, the length of a side of the triangle, and `h`, the height of the triangle.
+- The function returns a float representing the area of the triangle.
+
+## Expected Behavior
+- The function should calculate the area of a triangle using the given side length `a` and height `h`.
+
+## Edge Cases
+- Handle a negative side length `a` or negative height `h`, returning 0.
+- Handle non-integer or non-float `a` or `h` values, raising a `TypeError` or returning 0.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(1).
+- Space complexity: O(1).
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-numeric input for `a` or `h`, raising a `TypeError` or returning 0.
+- Handle non-integer or non-float input for `a` or `h`, raising a `TypeError` or returning 0.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.

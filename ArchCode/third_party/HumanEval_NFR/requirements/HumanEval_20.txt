@@ -1,0 +1,34 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a list of floats `numbers` as input.
+- It returns a tuple of two floats.
+
+## Expected Behavior
+- The function should select and return two numbers from the `numbers` list that are the closest to each other.
+- The numbers in the returned tuple should be in ascending order, with the smaller number first.
+
+## Edge Cases
+- Handle the case where the `numbers` list has less than two elements, raising a ValueError or returning None.
+- Handle the case where multiple pairs of numbers have the same minimum difference, returning any of them.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n^2) where n is the length of the `numbers` list.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list `numbers` input or non-float elements in the `numbers` list.
+- Handle the case where the `numbers` list has duplicate elements.
+
+### Reliability
+- Avoid index errors while accessing `numbers` elements.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

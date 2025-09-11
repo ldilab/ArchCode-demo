@@ -1,0 +1,31 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and other potential errors.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a string `file_name` as input.
+- It returns a string, either 'Yes' or 'No'.
+
+## Expected Behavior
+- The function should return 'Yes' if the file's name is valid, and 'No' otherwise.
+
+## Edge Cases
+- Handle an empty `file_name` string, returning 'No'.
+- Handle a `file_name` string with more than three digits, returning 'No'.
+- Handle a `file_name` string with more than one dot, returning 'No'.
+- Handle a `file_name` string where the substring before the dot is empty or does not start with a letter, returning 'No'.
+- Handle a `file_name` string where the substring after the dot is not in ['txt', 'exe', 'dll'], returning 'No'.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the `file_name` string.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle a non-string `file_name` input.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.

@@ -1,0 +1,34 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a string `s` as input.
+- It returns a string.
+
+## Expected Behavior
+- The function should return the input string encrypted with the alphabet being rotated.
+- Each letter in the input string should be shifted down by two multiplied by two places in the alphabet.
+- Non-alphabetic characters should remain unchanged.
+
+## Edge Cases
+- Handle an empty string as input, returning an empty string.
+- Handle a string with only non-alphabetic characters, returning the same string.
+- Handle a string with only alphabetic characters, returning the encrypted string.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the input string.
+- Space complexity: O(n) where n is the length of the input string.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle a non-string input, returning None.
+- Handle uppercase letters in the input string, considering them as well.
+- Handle Unicode characters, considering only alphabetic characters and ignoring non-alphabetic characters.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

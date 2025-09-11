@@ -1,0 +1,33 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a list of integers `lst` as input.
+- It returns an integer.
+
+## Expected Behavior
+- The function should find the largest prime value in the list `lst` and return the sum of its digits.
+
+## Edge Cases
+- Handle an empty `lst` list, returning 0.
+- Handle the case where there are no prime numbers in the list, returning 0.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n * sqrt(m)), where n is the length of `lst` and m is the largest number in `lst`.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list input or non-integer elements in `lst`.
+
+### Reliability
+- Avoid index errors while accessing `lst` elements.
+- Ensure the accuracy of prime number identification.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.

@@ -1,0 +1,34 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, arithmetic operation errors (e.g., division by zero, overflow), and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a list of integers `l` as input.
+- It returns a list of integers.
+
+## Expected Behavior
+- The function should return a list that contains only the positive numbers from the input list `l`.
+
+## Edge Cases
+- Handle an empty input list `l`, returning an empty list.
+- Handle the case where all elements in the input list `l` are negative, returning an empty list.
+- Handle the case where all elements in the input list `l` are positive, returning the same list.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the input list `l`.
+- Space complexity: O(1).
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle non-list input.
+- Handle non-integer elements in the input list `l`.
+
+### Reliability
+- Avoid index errors while accessing elements in the input list `l`.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 5.

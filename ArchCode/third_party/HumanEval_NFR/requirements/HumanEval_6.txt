@@ -1,0 +1,32 @@
+# Problem Agnostic Requirements
+- Ensure error-free execution, avoiding type errors, index errors, and so on.
+- Demonstrate efficiency in the algorithmic approach to problem-solving.
+- Code should be clear, well-commented, and easy to understand and maintain.
+
+# Functional Requirements
+## Input-output Conditions
+- The function takes a string `paren_string` as input.
+- It returns a list of integers.
+
+## Expected Behavior
+- The function should split the input string into multiple groups of nested parentheses and determine the deepest level of nesting for each group.
+- It should return a list containing the deepest level of nesting for each group.
+
+## Edge Cases
+- Handle an empty `paren_string`, returning an empty list.
+- Handle cases where the `paren_string` contains invalid characters (characters other than '(' or ')'), returning an empty list.
+
+# Non-functional Requirements
+## Performance
+- Time complexity: O(n) where n is the length of the `paren_string`.
+- Space complexity: O(k) where k is the number of groups of nested parentheses in `paren_string`.
+- Ensure efficiency even for extremely large inputs, providing results within 5 seconds.
+
+## Specific Quality Requirements
+### Robustness
+- Handle a non-string `paren_string`.
+- Handle a `paren_string` with unbalanced parentheses, returning an empty list.
+- Handle a `paren_string` with invalid characters, returning an empty list.
+
+### Maintainability
+- Target Cyclomatic Complexity: ≤ 10.
