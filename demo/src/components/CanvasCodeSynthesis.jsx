@@ -177,13 +177,50 @@ function CardBox({ icon, title, right, children }) {
     );
 }
 
+// MonoBlock: allow wrapping so Plan cards wrap long lines to box width
 function MonoBlock({ code, className }) {
     return (
-        <pre className={`rounded-xl border bg-white-900 text-neutral-200 overflow-auto p-4 text-sm leading-relaxed ${className ?? ""}`}>
-      <SyntaxHighlighter language="python" style={docco}>
-        {code}
-      </SyntaxHighlighter>
-    </pre>
+        <div
+            className={`rounded-xl border bg-white text-neutral-800 overflow-auto p-4 text-sm leading-relaxed w-full max-w-full box-border ${className ?? ""}`}
+            style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+        >
+            <SyntaxHighlighter
+                language="python"
+                style={docco}
+                wrapLongLines={true}
+                PreTag="div"          // ← 내부에서 <pre> 안 만들기
+                CodeTag="code"
+                customStyle={{
+                    background: "transparent",
+                    padding: 0,
+                    margin: 0,
+                    display: "block",
+                    width: "100%",
+                    maxWidth: "100%",
+                    boxSizing: "border-box",
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-word",
+                    overflowWrap: "anywhere",    // ← 아주 긴 토큰도 줄바꿈
+                }}
+                codeTagProps={{
+                    style: {
+                        display: "block",
+                        whiteSpace: "pre-wrap",
+                        wordBreak: "break-word",
+                        overflowWrap: "anywhere",
+                    },
+                }}
+                lineProps={{
+                    style: {
+                        whiteSpace: "pre-wrap",
+                        wordBreak: "break-word",
+                        overflowWrap: "anywhere",
+                    },
+                }}
+            >
+                {String(code ?? "")}
+            </SyntaxHighlighter>
+        </div>
     );
 }
 
@@ -237,6 +274,33 @@ export function useClipboard() {
     return { copy, copied, error };
 }
 
+// --------------------------- Loading / Skeleton UI ---------------------------
+
+function Spinner({ className = "h-4 w-4" }) {
+    return (
+        <svg className={`animate-spin ${className}`} viewBox="0 0 24 24" aria-hidden>
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+        </svg>
+    );
+}
+
+function Skeleton({ className = "" }) {
+    return <div className={`animate-pulse bg-slate-200/80 rounded-md ${className}`} />;
+}
+
+function CodeSkeleton({ lines = 6 }) {
+    return (
+        <div className="rounded-xl border bg-white p-3">
+            <div className="space-y-2">
+                {Array.from({ length: lines }).map((_, i) => (
+                    <Skeleton key={i} className={`h-3 ${i % 5 === 0 ? "w-4/5" : i % 3 === 0 ? "w-3/4" : "w-full"}`} />
+                ))}
+            </div>
+        </div>
+    );
+}
+
 // --------------------------- Main Component ---------------------------
 
 export default function CanvasCodeSynthesis() {
@@ -282,6 +346,9 @@ export default function CanvasCodeSynthesis() {
     const abortRef = useRef(null);
 
     const tailwindOK = useTailwindPresence();
+
+    // Refs for horizontal scrollers
+    const planRef = useRef(null);
 
     // Load saved API key (optional)
     useEffect(() => {
@@ -727,6 +794,17 @@ export default function CanvasCodeSynthesis() {
     );
     const hasEmptyCategory = [...functionalGroups, ...nonfunctionalGroups].some((g) => (g.tests || []).length === 0);
 
+    // Auto-scroll plan container to the first item when plan arrives (you can change to last item if you prefer)
+    useEffect(() => {
+        try {
+            const el = planRef.current;
+            if (el && Array.isArray(bundle?.stream?.plan) && bundle.stream.plan.length) {
+                // scrollTo start (0). If you prefer to show the newest at the right, use el.scrollLeft = el.scrollWidth
+                el.scrollTo({ left: 0, behavior: "smooth" });
+            }
+        } catch (e) {}
+    }, [bundle?.stream?.plan?.length]);
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 text-slate-900">
             <header className="sticky top-0 z-40 bg-white/70 backdrop-blur border-b">
@@ -765,7 +843,7 @@ export default function CanvasCodeSynthesis() {
                                 </button>
                             ))}
                         {streaming ? (
-                            <span className="inline-flex items-center gap-2 text-xs text-violet-700 bg-violet-50 border border-violet-200 px-2 py-1 rounded-full">
+                            <span className="inline-flex items-center gap-2 text-xs text-violet-700 bg-violet-50 border border-violet-200 px-2 py-1 rounded-full" role="status" aria-live="polite">
                 <span className="h-2 w-2 rounded-full bg-violet-500 animate-pulse" /> Streaming…
               </span>
                         ) : (
@@ -790,6 +868,7 @@ export default function CanvasCodeSynthesis() {
                                         className="border rounded-md px-2 py-1"
                                         value={sampleCount}
                                         onChange={(e) => setSampleCount(Math.max(1, parseInt(e.target.value) || 1))}
+                                        disabled={streaming}
                                     >
                                         {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
                                             <option key={n} value={n}>
@@ -801,6 +880,7 @@ export default function CanvasCodeSynthesis() {
                                 <button
                                     onClick={() => setShowLlm((v) => !v)}
                                     className="inline-flex items-center gap-2 rounded-2xl border px-3 py-1.5 text-sm hover:bg-gray-50"
+                                    disabled={streaming}
                                 >
                                     <Settings className="h-4 w-4" /> Params
                                 </button>
@@ -820,14 +900,21 @@ export default function CanvasCodeSynthesis() {
                             </div>
                         }
                     >
-            <textarea
-                value={problem}
-                onChange={(e) => setProblem(e.target.value)}
-                placeholder="Describe what the program must do..."
-                className="w-full rounded-xl border px-3 py-2 bg-white focus:outline-none focus:ring-2 ring-violet-200"
-                rows={5}
-                disabled={streaming}
-            />
+                        <div className="relative">
+              <textarea
+                  value={problem}
+                  onChange={(e) => setProblem(e.target.value)}
+                  placeholder="Describe what the program must do..."
+                  className="w-full rounded-xl border px-3 py-2 bg-white focus:outline-none focus:ring-2 ring-violet-200"
+                  rows={5}
+                  disabled={streaming}
+                  aria-busy={streaming}
+              />
+                            {streaming && (
+                                <div className="absolute inset-0 rounded-xl bg-white/60 pointer-events-none" />
+                            )}
+                        </div>
+
                         <p className="text-xs text-slate-500 mt-2">
                             Click “Generate” to stream from <span className="font-mono">/generate</span>. Responses are parsed line-by-line (NDJSON).
                         </p>
@@ -838,7 +925,7 @@ export default function CanvasCodeSynthesis() {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                                     <label className="text-sm">
                                         <span className="block text-slate-600 mb-1">Platform</span>
-                                        <select className="w-full border rounded-md px-2 py-1" value={llm.platform} onChange={(e) => setLlm((prev) => ({ ...prev, platform: e.target.value }))}>
+                                        <select className="w-full border rounded-md px-2 py-1" value={llm.platform} onChange={(e) => setLlm((prev) => ({ ...prev, platform: e.target.value }))} disabled={streaming}>
                                             <option value="openai">openai</option>
                                             <option disabled value="azure">
                                                 azure
@@ -857,11 +944,12 @@ export default function CanvasCodeSynthesis() {
                                             className="w-full border rounded-md px-2 py-1"
                                             value={llm.model_name}
                                             onChange={(e) => setLlm((prev) => ({ ...prev, model_name: e.target.value }))}
+                                            disabled={streaming}
                                         />
                                     </label>
                                     <label className="text-sm">
                                         <span className="block text-slate-600 mb-1">Decoding</span>
-                                        <select className="w-full border rounded-md px-2 py-1" value={llm.strategy} onChange={(e) => setLlm((prev) => ({ ...prev, strategy: e.target.value }))}>
+                                        <select className="w-full border rounded-md px-2 py-1" value={llm.strategy} onChange={(e) => setLlm((prev) => ({ ...prev, strategy: e.target.value }))} disabled={streaming}>
                                             <option value="greedy">greedy</option>
                                             <option value="nucleus">nucleus</option>
                                         </select>
@@ -886,6 +974,7 @@ export default function CanvasCodeSynthesis() {
                                                         const v = parseFloat(e.target.value);
                                                         if (!Number.isNaN(v)) setLlm((p) => ({ ...p, kwargs: { ...p.kwargs, temperature: v } }));
                                                     }}
+                                                    disabled={streaming}
                                                 />
                                             </label>
                                             <label className="text-xs">
@@ -901,6 +990,7 @@ export default function CanvasCodeSynthesis() {
                                                         const v = parseFloat(e.target.value);
                                                         if (!Number.isNaN(v)) setLlm((p) => ({ ...p, kwargs: { ...p.kwargs, top_p: v } }));
                                                     }}
+                                                    disabled={streaming}
                                                 />
                                             </label>
                                             <label className="text-xs">
@@ -915,6 +1005,7 @@ export default function CanvasCodeSynthesis() {
                                                         const v = parseInt(e.target.value) || 0;
                                                         if (v > 0) setLlm((p) => ({ ...p, kwargs: { ...p.kwargs, max_tokens: v } }));
                                                     }}
+                                                    disabled={streaming}
                                                 />
                                             </label>
                                         </div>
@@ -934,8 +1025,43 @@ export default function CanvasCodeSynthesis() {
                         )}
                     </CardBox>
 
+                    {/* Plans */}
+                    <CardBox icon={<FileText className="h-5 w-5" />} title="Plans">
+                        {Array.isArray(bundle?.stream?.plan) && bundle.stream.plan.length ? (
+                            <div
+                                ref={planRef}
+                                className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory px-1"
+                                style={{scrollbarGutter: "stable both-edges"}}   // ← 스크롤바 폭 예약
+                                role="region" aria-label="Plan steps list" tabIndex={0}
+                            >
+                                {bundle.stream.plan.map((p, i) => (
+                                    <div
+                                        key={i}
+                                        className="
+        flex-shrink-0 min-w-0 box-border snap-center
+        w-[min(28rem,calc(100%-0.75rem))]   /* gap-3 = 0.75rem */
+      "
+                                    >
+                                        <MonoBlock code={p}/>
+                                    </div>
+                                ))}
+                            </div>
+
+
+                        ) : streaming ? (
+                            <div role="status" aria-live="polite" className="space-y-2">
+                                <div className="flex items-center gap-2 text-slate-600">
+                                    <Spinner/> <span>Preparing plan…</span>
+                                </div>
+                                <CodeSkeleton lines={4}/>
+                            </div>
+                        ) : (
+                            <div className="text-sm text-slate-500 italic">No plan received yet.</div>
+                        )}
+                    </CardBox>
+
                     {/* 2) Tests & Coverage */}
-                    <CardBox icon={<Beaker className="h-5 w-5" />} title="2) Tests & Coverage (by Requirement)">
+                    <CardBox icon={<Beaker className="h-5 w-5" />} title="2) Requirments & Tests">
                         {/* 서버 원문 요구사항 미리보기 */}
                         {Array.isArray(bundle?.stream?.requirements) && bundle.stream.requirements[0] && (
                             <details className="mb-3">
@@ -945,105 +1071,196 @@ export default function CanvasCodeSynthesis() {
                         )}
 
                         {/* 커버리지 그리드 */}
-                        <div className="space-y-5">
+                        <div className="space-y-5" aria-live={streaming ? "polite" : undefined} role={streaming ? "status" : undefined}>
                             {/* Functional */}
                             <div>
                                 <div className="text-[11px] uppercase tracking-wider text-slate-500 mb-2">Functional</div>
-                                <div className="space-y-3">
-                                    {functionalGroups.map(({ req, tests }) => {
-                                        const c = colorFor(req.id);
-                                        const cov = coverageBadge(tests.length);
-                                        return (
-                                            <div key={req.id} className={`rounded-xl border p-3 ${c.bg}`}>
+
+                                {/* REQUIREMENT CARDS: vertical stack; tests inside each req scroll horizontally */}
+                                {functionalGroups.length && !streaming ? (
+                                    <div className="space-y-3">
+                                        {functionalGroups.map(({ req, tests }) => {
+                                            const c = colorFor(req.id);
+                                            const cov = coverageBadge(tests.length);
+                                            return (
+                                                <div key={req.id} className={`rounded-xl border p-3 ${c.bg}`}>
+                                                    <div className="flex items-start justify-between gap-2">
+                                                        <div className="flex items-start gap-2">
+                                                            <span className={`mt-1 h-2 w-2 rounded-full ${c.dot}`} />
+                                                            <div className="min-w-0">
+                                                                <div className="font-medium">{req.title}</div>
+                                                                {Array.isArray(req.details) && req.details.length > 0 && (
+                                                                    <ul className="list-disc pl-5 text-sm text-slate-600 mt-1">
+                                                                        {req.details.map((d, i) => (
+                                                                            <li key={i}>{d}</li>
+                                                                        ))}
+                                                                    </ul>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                        <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${cov.className}`}>
+                              {cov.text}
+                            </span>
+                                                    </div>
+
+                                                    {/* TESTS: horizontal scroll per requirement (snap center) */}
+                                                    <div className="mt-3">
+                                                        {tests.length ? (
+                                                            <div
+                                                                className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory px-2"
+                                                                role="region"
+                                                                aria-label={`${req.title} tests`}
+                                                                tabIndex={0}
+                                                                style={{
+                                                                    scrollbarGutter: "stable both-edges",
+                                                                    WebkitOverflowScrolling: "touch"
+                                                                }}
+                                                            >
+                                                                {tests.map((t) => (
+                                                                    <div
+                                                                        key={t.id}
+                                                                        className="
+        rounded-lg border bg-white p-3
+        flex-shrink-0 min-w-0 box-border snap-center
+        first:scroll-ml-2 last:scroll-mr-2
+        w-[min(22rem,calc(100%-0.75rem))]  /* gap-3 = 0.75rem */
+      "
+                                                                    >
+                                                                        <div className="font-medium">{t.title}</div>
+                                                                        <MonoBlock
+                                                                            code={normalizeDisplayedTestCode(t.code)}
+                                                                            className="mt-2"/>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        ) : (
+                                                            <div className="text-sm text-slate-500 italic">No tests
+                                                                linked to this requirement.</div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                ) : streaming ? (
+                                    // skeleton while streaming
+                                    <div className="space-y-3">
+                                    {Array.from({ length: 2 }).map((_, i) => (
+                                            <div key={i} className="rounded-xl border p-3">
                                                 <div className="flex items-start justify-between gap-2">
                                                     <div className="flex items-start gap-2">
-                                                        <span className={`mt-1 h-2 w-2 rounded-full ${c.dot}`} />
+                                                        <div className="mt-1 h-2 w-2 rounded-full bg-slate-200 animate-pulse" />
                                                         <div>
-                                                            <div className="font-medium">{req.title}</div>
-                                                            {Array.isArray(req.details) && req.details.length > 0 && (
-                                                                <ul className="list-disc pl-5 text-sm text-slate-600 mt-1">
-                                                                    {req.details.map((d, i) => (
-                                                                        <li key={i}>{d}</li>
-                                                                    ))}
-                                                                </ul>
-                                                            )}
+                                                            <Skeleton className="h-4 w-32 mb-2" />
+                                                            <Skeleton className="h-3 w-3/4" />
                                                         </div>
                                                     </div>
-                                                    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${cov.className}`}>
-                            {cov.text}
-                          </span>
+                                                    <Skeleton className="h-6 w-16" />
                                                 </div>
-
-                                                <div className="mt-3 space-y-2">
-                                                    {tests.length ? (
-                                                        tests.map((t) => (
-                                                            <div key={t.id} className="rounded-lg border bg-white p-3">
-                                                                <div className="font-medium">{t.title}</div>
-                                                                <MonoBlock code={normalizeDisplayedTestCode(t.code)} className="mt-2" />
-                                                            </div>
-                                                        ))
-                                                    ) : (
-                                                        <div className="text-sm text-slate-500 italic">No tests linked to this requirement.</div>
-                                                    )}
+                                                <div className="mt-3">
+                                                    <CodeSkeleton lines={3} />
                                                 </div>
                                             </div>
-                                        );
-                                    })}
-
-                                    {(bundle?.requirements || []).some((r) => r.kind === "functional") ? null : (
-                                        <div className="text-sm text-slate-500 italic">No functional requirements parsed yet.</div>
-                                    )}
-                                </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-sm text-slate-500 italic">No functional requirements parsed yet.</div>
+                                )}
                             </div>
 
                             {/* Non-Functional */}
                             <div>
                                 <div className="text-[11px] uppercase tracking-wider text-slate-500 mb-2 mt-4">Non-Functional</div>
-                                <div className="space-y-3">
-                                    {nonfunctionalGroups.map(({ req, tests }) => {
-                                        const c = colorFor(req.id);
-                                        const cov = coverageBadge(tests.length);
-                                        return (
-                                            <div key={req.id} className={`rounded-xl border p-3 ${c.bg}`}>
+
+                                {/* REQUIREMENT CARDS: vertical stack; tests inside each req scroll horizontally */}
+                                {nonfunctionalGroups.length && !streaming ? (
+                                    <div className="space-y-3">
+                                        {nonfunctionalGroups.map(({ req, tests }) => {
+                                            const c = colorFor(req.id);
+                                            const cov = coverageBadge(tests.length);
+                                            return (
+                                                <div key={req.id} className={`rounded-xl border p-3 ${c.bg}`}>
+                                                    <div className="flex items-start justify-between gap-2">
+                                                        <div className="flex items-start gap-2">
+                                                            <span className={`mt-1 h-2 w-2 rounded-full ${c.dot}`} />
+                                                            <div className="min-w-0">
+                                                                <div className="font-medium">{req.title}</div>
+                                                                {Array.isArray(req.details) && req.details.length > 0 && (
+                                                                    <ul className="list-disc pl-5 text-sm text-slate-600 mt-1">
+                                                                        {req.details.map((d, i) => (
+                                                                            <li key={i}>{d}</li>
+                                                                        ))}
+                                                                    </ul>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                        <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${cov.className}`}>
+                              {cov.text}
+                            </span>
+                                                    </div>
+
+                                                    {/* TESTS: horizontal scroll per requirement (snap center) */}
+                                                    <div className="mt-3">
+                                                        {tests.length ? (
+                                                            <div
+                                                                className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory px-2"
+                                                                role="region"
+                                                                aria-label={`${req.title} tests`}
+                                                                tabIndex={0}
+                                                                style={{
+                                                                    scrollbarGutter: "stable both-edges",
+                                                                    WebkitOverflowScrolling: "touch"
+                                                                }}
+                                                            >
+                                                                {tests.map((t) => (
+                                                                    <div
+                                                                        key={t.id}
+                                                                        className="
+        rounded-lg border bg-white p-3
+        flex-shrink-0 min-w-0 box-border snap-center
+        first:scroll-ml-2 last:scroll-mr-2
+        w-[min(22rem,calc(100%-0.75rem))]  /* gap-3 = 0.75rem */
+      "
+                                                                    >
+                                                                        <div className="font-medium">{t.title}</div>
+                                                                        <MonoBlock
+                                                                            code={normalizeDisplayedTestCode(t.code)}
+                                                                            className="mt-2"/>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        ) : (
+                                                            <div className="text-sm text-slate-500 italic">No tests
+                                                                linked to this requirement.</div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                ) : streaming ? (
+                                    <div className="space-y-3">
+                                        {Array.from({length: 2}).map((_, i) => (
+                                            <div key={i} className="rounded-xl border p-3">
                                                 <div className="flex items-start justify-between gap-2">
                                                     <div className="flex items-start gap-2">
-                                                        <span className={`mt-1 h-2 w-2 rounded-full ${c.dot}`} />
+                                                        <div className="mt-1 h-2 w-2 rounded-full bg-slate-200 animate-pulse" />
                                                         <div>
-                                                            <div className="font-medium">{req.title}</div>
-                                                            {Array.isArray(req.details) && req.details.length > 0 && (
-                                                                <ul className="list-disc pl-5 text-sm text-slate-600 mt-1">
-                                                                    {req.details.map((d, i) => (
-                                                                        <li key={i}>{d}</li>
-                                                                    ))}
-                                                                </ul>
-                                                            )}
+                                                            <Skeleton className="h-4 w-28 mb-2" />
+                                                            <Skeleton className="h-3 w-3/4" />
                                                         </div>
                                                     </div>
-                                                    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${cov.className}`}>
-                            {cov.text}
-                          </span>
+                                                    <Skeleton className="h-6 w-16" />
                                                 </div>
-
-                                                <div className="mt-3 space-y-2">
-                                                    {tests.length ? (
-                                                        tests.map((t) => (
-                                                            <div key={t.id} className="rounded-lg border bg-white p-3">
-                                                                <div className="font-medium">{t.title}</div>
-                                                                <MonoBlock code={normalizeDisplayedTestCode(t.code)} className="mt-2" />
-                                                            </div>
-                                                        ))
-                                                    ) : (
-                                                        <div className="text-sm text-slate-500 italic">No tests linked to this requirement.</div>
-                                                    )}
+                                                <div className="mt-3">
+                                                    <CodeSkeleton lines={2} />
                                                 </div>
                                             </div>
-                                        );
-                                    })}
-
-                                    {(bundle?.requirements || []).some((r) => r.kind === "nonfunctional") ? null : (
-                                        <div className="text-sm text-slate-500 italic">No non-functional requirements parsed yet.</div>
-                                    )}
-                                </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-sm text-slate-500 italic">No non-functional requirements parsed yet.</div>
+                                )}
                             </div>
                         </div>
 
@@ -1054,19 +1271,6 @@ export default function CanvasCodeSynthesis() {
                                 <MonoBlock code={rawGenTcText} />
                             </div>
                         ) : null}
-                    </CardBox>
-
-                    {/* Plans */}
-                    <CardBox icon={<FileText className="h-5 w-5" />} title="Plan">
-                        {Array.isArray(bundle?.stream?.plan) && bundle.stream.plan.length ? (
-                            <div className="space-y-2">
-                                {bundle.stream.plan.map((p, i) => (
-                                    <MonoBlock key={i} code={p} />
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="text-sm text-slate-500 italic">No plan received yet.</div>
-                        )}
                     </CardBox>
                 </div>
 
@@ -1079,12 +1283,12 @@ export default function CanvasCodeSynthesis() {
                         right={
                             <div className="flex items-center gap-3 text-sm">
                                 <label className="inline-flex items-center gap-1">
-                                    <input type="checkbox" className="h-4 w-4" checked={filterFrMeets} onChange={(e) => setFilterFrMeets(e.target.checked)} />
+                                    <input type="checkbox" className="h-4 w-4" checked={filterFrMeets} onChange={(e) => setFilterFrMeets(e.target.checked)} disabled={streaming} />
                                     <span>FR meets only</span>
                                 </label>
                                 <div className="inline-flex items-center gap-1">
                                     <span>Sort</span>
-                                    <select className="border rounded-md px-2 py-1" value={sortKey} onChange={(e) => setSortKey(e.target.value)}>
+                                    <select className="border rounded-md px-2 py-1" value={sortKey} onChange={(e) => setSortKey(e.target.value)} disabled={streaming}>
                                         <option value="score">Score</option>
                                         <option value="tests">Tests</option>
                                         <option value="complexity">Complexity</option>
@@ -1093,6 +1297,7 @@ export default function CanvasCodeSynthesis() {
                                         className="border rounded-md px-2 py-1"
                                         onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
                                         title="Toggle sort order"
+                                        disabled={streaming}
                                     >
                                         {sortDir === "asc" ? "Asc" : "Desc"}
                                     </button>
@@ -1102,20 +1307,34 @@ export default function CanvasCodeSynthesis() {
                     >
                         <div className="max-h-[60vh] overflow-y-auto pr-1">
                             <div className="flex flex-col gap-3">
-                                {sortedCandidates.length === 0 ? (
+                                {sortedCandidates.length === 0 && !streaming ? (
                                     <div className="text-sm text-slate-500 italic px-1">No candidates yet — start a stream to see generated code.</div>
+                                ) : null}
+
+                                {streaming && sortedCandidates.length === 0 ? (
+                                    // skeleton candidate list while streaming
+                                    <>
+                                        {Array.from({ length: 3 }).map((_, i) => (
+                                            <div key={`skeleton-${i}`} className="rounded-2xl border p-3 bg-white">
+                                                <div className="flex items-start justify-between">
+                                                    <div>
+                                                        <Skeleton className="h-4 w-36 mb-2" />
+                                                        <Skeleton className="h-3 w-48" />
+                                                    </div>
+                                                    <div className="text-right text-xs">
+                                                        <Skeleton className="h-4 w-16 mb-2" />
+                                                        <Skeleton className="h-3 w-16" />
+                                                        <Skeleton className="h-3 w-20 mt-2" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </>
                                 ) : null}
 
                                 {sortedCandidates.map((d) => {
                                     const c = d.c;
                                     const selectedStyle = selected?.id === c.id ? "ring-2 ring-violet-300 border-violet-300" : "hover:bg-gray-50";
-                                    // const tagBadges = [
-                                    //   `Lang: ${(c.language || "").toUpperCase()}`,
-                                    //   `Complexity: ${c.metrics.timeComplexityLabel}`,
-                                    //   `CC: ${c.metrics.cyclomaticComplexity}`,
-                                    //   c.metrics.robustInputChecks ? "Robust" : "No checks",
-                                    //   c.metrics.handlesNegativesAndZero ? "Edge-safe" : "Edge-unsafe",
-                                    // ];
                                     return (
                                         <div
                                             key={c.id}
@@ -1152,7 +1371,20 @@ export default function CanvasCodeSynthesis() {
                     {/* 4) Selected Code */}
                     <CardBox icon={<CheckCircle2 className="h-5 w-5" />} title="4) Selected Code">
                         {!selected ? (
-                            <div className="text-slate-500 text-sm">No selection. Stream and pick a candidate.</div>
+                            streaming ? (
+                                <div className="space-y-3" role="status" aria-live="polite">
+                                    <div className="flex items-center gap-2 text-slate-600">
+                                        <Spinner /> <span>Waiting for generated candidates…</span>
+                                    </div>
+                                    <div className="rounded-2xl border overflow-hidden">
+                                        <div className="h-[70vh] bg-white p-4">
+                                            <CodeSkeleton lines={18} />
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="text-slate-500 text-sm">No selection. Stream and pick a candidate.</div>
+                            )
                         ) : (
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between">
