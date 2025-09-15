@@ -108,14 +108,15 @@ def _execute(
         # Running a simple command
         try:
             result = subprocess.run(
-                command,
-                shell=True,
+                ["python3", "-u", code_file_name],
+                stdin=open(stdin_file_name, "r"),
                 capture_output=True,
                 text=True,
+                timeout=timeout
             )
-            print("Stdout:", result.stdout)
+            print("Stdout:", f"Exit Code: {result.returncode}")
 
-            return result.stdout
+            return f"Exit Code: {result.returncode}"
 
         except Exception as e:
             return str(e)

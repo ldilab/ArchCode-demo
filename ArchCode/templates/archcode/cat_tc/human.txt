@@ -1,10 +1,9 @@
 ```python
-{{ prompt }}
+{{ gen_tc_original }}
 ```
 
-Write testcases for the problem.
-You must categorize the test cases into the following categories and sub-categories, described below.
-All the categories need to be covered.
+Categorize testcases for the problem based on the requirements.
+Following sections are the categories and sub-categories.
 * "# Test Cases Regarding Functional Requirements"
 * "## General Cases"
 * "## Edge Cases"
@@ -14,5 +13,4 @@ All the categories need to be covered.
 * "### Robustness"
 * "### Maintainability"
 
-Don't use unittest or any other testing library.
 Package your response in ```python ... ```.

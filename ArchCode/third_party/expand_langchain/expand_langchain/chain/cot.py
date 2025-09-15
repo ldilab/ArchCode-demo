@@ -20,11 +20,17 @@ def cot_chain(
             examples=list(examples.values()),
             **kwargs,
         )
+        input_prompt = chain.get_prompts()[0][-1].format(**data).content
+        # if input prompt is not str, apply .to_string()
+        if not isinstance(input_prompt, str):
+            input_prompt = input_prompt.to_string()
+
         parser = parser_chain(**kwargs)
         result = await chain.ainvoke(data, config=config)
         parsed_result = parser.invoke(result, config=config)
 
         return {
+            f"{key}_input": input_prompt,
             f"{key}_raw": result,
             key: parsed_result,
         }

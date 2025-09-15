@@ -585,7 +585,7 @@ export default function CanvasCodeSynthesis() {
             const pass = tr.pass ?? 0;
             const total = tr.total ?? totalTests;
             const fail = tr.fail ?? Math.max(0, total - pass);
-            const score = pass;
+            const score = Math.round(pass / total * 100);
             const { ok } = scoreCandidate(c, bundle.requirements);
             return { c, score, ok, pass, fail, total };
         });

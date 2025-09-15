@@ -122,6 +122,7 @@ class Server(BaseModel):
                         "requirements",
                         "gen_tc",
                         "code",
+                        "gen_tc_list",
                         "gen_tc_exec_code",
                         "gen_tc_exec_result",
                         "gen_tc_passed",
