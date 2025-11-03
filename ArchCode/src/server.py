@@ -138,8 +138,15 @@ class Server(BaseModel):
                 os.environ["OPENAI_API_KEY"] = ""
 
             print(f"{os.environ['CODEEXEC_ENDPOINT']=}")
-
-            return Response(_generate(), content_type="application/json")
+            resp = Response(
+                _generate(),
+                # content_type="application/json",
+                mimetype="text/event-stream",
+                headers={"Connection": "keep-alive",}
+            )
+            resp.content_length = None
+            resp.headers.pop("Content-Length", None)
+            return resp
 
         await app.run_task(port=port, host="0.0.0.0")
 
