@@ -140,7 +140,7 @@ class Server(BaseModel):
             print(f"{os.environ['CODEEXEC_ENDPOINT']=}")
             resp = Response(
                 _generate(),
-                # content_type="application/json",
+                content_type="application/json",
                 mimetype="text/event-stream",
                 headers={"Connection": "keep-alive",}
             )
